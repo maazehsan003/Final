@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+<h2>Edit Profile</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Bio:</label><br>
+    <textarea name="bio" required>{{ profile.bio }}</textarea><br><br>
+
+    <label>Skills (comma separated):</label><br>
+    <input type="text" name="skills" value="{{ profile.skills }}" required><br><br>
+
+    <label>Hourly Rate ($):</label><br>
+    <input type="number" name="hourly_rate" value="{{ profile.hourly_rate }}" required><br><br>
+
+    <label>Experience:</label><br>
+    <textarea name="experience" required>{{ profile.experience }}</textarea><br><br>
+
+    <label>Profile Picture:</label><br>
+    {% if profile.profile_picture %}
+    <img src="{{ profile.profile_picture.url }}" width="100" height="100"><br>
+    {% endif %}
+    <input type="file" name="profile_picture"><br><br>
+
+    <button type="submit">Save Changes</button>
+</form>
+{% endblock %}

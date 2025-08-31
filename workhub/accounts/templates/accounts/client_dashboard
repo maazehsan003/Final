@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+<h2>Welcome, {{ user.username }} (Client)</h2>
+
+{% if profile.profile_picture %}
+<img src="{{ profile.profile_picture.url }}" alt="Profile Picture" width="120" height="120">
+{% else %}
+<p>No profile picture uploaded yet.</p>
+{% endif %}
+
+<p>You are ready to hire freelancers!</p>
+
+<a href="#">Post a Job</a> | <a href="#">My Jobs</a>
+{% endblock %}

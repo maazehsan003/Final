@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+<h2>Welcome, {{ user.username }} (Freelancer)</h2>
+
+{% if profile.profile_picture %}
+<img src="{{ profile.profile_picture.url }}" alt="Profile Picture" width="120" height="120">
+{% else %}
+<p>No profile picture uploaded yet.</p>
+{% endif %}
+
+<p><strong>Bio:</strong> {{ profile.bio }}</p>
+<p><strong>Skills:</strong> {{ profile.skills }}</p>
+<p><strong>Hourly Rate:</strong> ${{ profile.hourly_rate }}</p>
+<p><strong>Experience:</strong> {{ profile.experience }}</p>
+
+<a href="{% url 'edit_profile' %}">Edit Profile</a> | <a href="#">Browse Jobs</a>
+{% endblock %}

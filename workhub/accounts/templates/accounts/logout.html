@@ -1,0 +1,9 @@
+{% block body %}
+
+<h2>You have been logged out</h2>
+<p>Thanks for visiting. See you again!</p>
+
+<a href="{% url 'login' %}">Login Again</a> |
+<a href="{% url 'register' %}">Create a New Account</a>
+
+{% endblock %}
