@@ -9,7 +9,6 @@ from django.http import JsonResponse
 from django.urls import reverse
 
 def register(request):
-    # 🔧 FIX 1: Redirect authenticated users to dashboard
     if request.user.is_authenticated:
         return redirect('dashboard')
         
@@ -32,13 +31,12 @@ def register(request):
         Profile.objects.create(user=user)
         login(request, user)
 
-        # 🔑 Get new CSRF token after login
         csrf_token = get_token(request)
 
         return JsonResponse({
             "success": True,
             "message": "Account created successfully!",
-            "csrfToken": csrf_token   # send back to JS
+            "csrfToken": csrf_token 
         })
 
     if request.method == "GET":
@@ -100,7 +98,6 @@ def setup_profile(request):
     return render(request, "accounts/setup_profile.html", {"role": profile.role})
 
 def login_view(request):
-    # 🔧 FIX 1: Redirect authenticated users to dashboard
     if request.user.is_authenticated:
         return redirect('dashboard')
         
@@ -112,7 +109,6 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, "Logged in successfully.")
-            # 🔧 FIX 2: Always redirect to dashboard after login
             return redirect("dashboard")
         else:
             messages.error(request, "Invalid username or password.")
@@ -151,7 +147,6 @@ def edit_profile(request):
     if not profile:
         return redirect("register")
 
-    # 🔧 FIX 3: Get the correct profile based on user's role
     context = {"profile": profile}
     
     if profile.role == "freelancer":
@@ -168,22 +163,18 @@ def edit_profile(request):
 
     if request.method == "POST":
         if profile.role == "freelancer":
-            # 🔧 FIX 3: Update freelancer profile correctly
             freelancer_profile = FreelancerProfile.objects.get(profile=profile)
             
-            freelancer_profile.first_name = request.POST.get("first_name", freelancer_profile.first_name)  # ✅ Added
-            freelancer_profile.last_name = request.POST.get("last_name", freelancer_profile.last_name)    # ✅ Added
+            freelancer_profile.first_name = request.POST.get("first_name", freelancer_profile.first_name) 
+            freelancer_profile.last_name = request.POST.get("last_name", freelancer_profile.last_name) 
             freelancer_profile.title = request.POST.get("title", freelancer_profile.title)
             freelancer_profile.bio = request.POST.get("bio", freelancer_profile.bio)
             freelancer_profile.skills = request.POST.get("skills", freelancer_profile.skills)
-            freelancer_profile.phone_number = request.POST.get("phone_number", freelancer_profile.phone_number)  # ✅ Added
+            freelancer_profile.phone_number = request.POST.get("phone_number", freelancer_profile.phone_number) 
             
-            # Handle hourly_rate properly
             hourly_rate = request.POST.get("hourly_rate")
             if hourly_rate:
                 freelancer_profile.hourly_rate = hourly_rate
-            
-            # Handle profile picture
             profile_picture = request.FILES.get("profile_picture")
             if profile_picture:
                 freelancer_profile.profile_picture = profile_picture
@@ -191,16 +182,13 @@ def edit_profile(request):
             freelancer_profile.save()
             
         elif profile.role == "client":
-            # 🔧 FIX 3: Update client profile correctly
             client_profile = ClientProfile.objects.get(profile=profile)
             
             client_profile.first_name = request.POST.get("first_name", client_profile.first_name)
             client_profile.last_name = request.POST.get("last_name", client_profile.last_name)
             client_profile.company_name = request.POST.get("company_name", client_profile.company_name)
-            client_profile.phone_number = request.POST.get("phone_number", client_profile.phone_number)  # ✅ Added
-            
-            # Handle profile picture
-            profile_picture = request.FILES.get("profile_picture")  # ✅ Added
+            client_profile.phone_number = request.POST.get("phone_number", client_profile.phone_number)
+            profile_picture = request.FILES.get("profile_picture")
             if profile_picture:
                 client_profile.profile_picture = profile_picture
             

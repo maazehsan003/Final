@@ -1,4 +1,3 @@
-// 🔴 Moved getCookie OUTSIDE so all functions can use it
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -14,7 +13,6 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// 🔑 Function to get fresh CSRF token from DOM
 function getCSRFTokenFromDOM() {
     const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
     if (csrfInput) {
@@ -23,14 +21,10 @@ function getCSRFTokenFromDOM() {
     return getCookie('csrftoken');
 }
 
-// 🔑 Make csrftoken GLOBAL so all functions can see it
 let csrftoken = getCookie('csrftoken');
 
 document.addEventListener('DOMContentLoaded', function() {
-    // ⌗ removed "let" here – we now reuse global csrftoken
     csrftoken = getCookie('csrftoken');    
-
-    // Handle registration form submission
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -45,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': csrftoken   // 🔴 send current token
+                    'X-CSRFToken': csrftoken   
                 },
                 credentials: 'same-origin'
             });
@@ -64,18 +58,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (data.success) {
-                // 🔑 USE new CSRF token returned by Django
                 if (data.csrfToken) {
-                    csrftoken = data.csrfToken;  // ✅ updates global
+                    csrftoken = data.csrfToken;  
                     console.log("🔑 Updated CSRF token from backend:", csrftoken);
                     
-                    // 🔑 ALSO update the hidden CSRF input in the role form
                     const roleFormCSRF = document.querySelector('#roleForm [name=csrfmiddlewaretoken]');
                     if (roleFormCSRF) {
                         roleFormCSRF.value = csrftoken;
                     }
                 } else {
-                    csrftoken = getCookie('csrftoken'); // fallback
+                    csrftoken = getCookie('csrftoken');
                 }
 
                 const roleModal = new bootstrap.Modal(document.getElementById('roleModal'));
@@ -118,14 +110,13 @@ async function submitRole() {
         const roleForm = document.getElementById('roleForm');
         const formData = new FormData(roleForm);
 
-        // 🔑 Get the most current CSRF token before making the request
         const currentCSRFToken = getCSRFTokenFromDOM() || csrftoken;
         
         const response = await fetch(roleForm.action, {
             method: 'POST',
             body: formData,
             headers: { 
-                'X-CSRFToken': currentCSRFToken   // ✅ use most current token
+                'X-CSRFToken': currentCSRFToken 
             },
             credentials: 'same-origin'
         });

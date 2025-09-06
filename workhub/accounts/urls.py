@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 from django.shortcuts import redirect
 
-# Add this view for homepage redirect
 def homepage_redirect(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -10,7 +9,7 @@ def homepage_redirect(request):
         return redirect('login')
 
 urlpatterns = [
-    path("", homepage_redirect, name="home"),  # 🔧 FIX 1: Homepage redirect
+    path("", homepage_redirect, name="home"),
     path("register/", views.register, name="register"),
     path("save-role/", views.save_role, name="save_role"),
     path("setup-profile/", views.setup_profile, name="setup_profile"),
