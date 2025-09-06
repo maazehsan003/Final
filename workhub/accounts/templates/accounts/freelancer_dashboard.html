@@ -1,17 +1,65 @@
-{% extends "layout.html" %}
+{% extends "accounts/layout.html" %}
 {% block body %}
-<h2>Welcome, {{ user.username }} (Freelancer)</h2>
 
-{% if profile.profile_picture %}
-<img src="{{ profile.profile_picture.url }}" alt="Profile Picture" width="120" height="120">
-{% else %}
-<p>No profile picture uploaded yet.</p>
-{% endif %}
+<div class="container mt-4">
+  <!-- Success Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
 
-<p><strong>Bio:</strong> {{ profile.bio }}</p>
-<p><strong>Skills:</strong> {{ profile.skills }}</p>
-<p><strong>Hourly Rate:</strong> ${{ profile.hourly_rate }}</p>
-<p><strong>Experience:</strong> {{ profile.experience }}</p>
+  <div class="row">
+    <div class="col-md-8">
+      <h2>Welcome, {{ freelancer_profile.first_name }}!</h2>
+      <div class="card">
+        <div class="card-header">
+          <h4>Your Freelancer Profile</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8">
+              <h5>{{ freelancer_profile.title }}</h5>
+              <p><strong>Name:</strong> {{ freelancer_profile.first_name }} {{ freelancer_profile.last_name }}</p>
+              <p><strong>Bio:</strong> {{ freelancer_profile.bio }}</p>
+              <p><strong>Skills:</strong> {{ freelancer_profile.skills }}</p>
+              {% if freelancer_profile.phone_number %}
+                <p><strong>Phone:</strong> {{ freelancer_profile.phone_number }}</p>
+              {% endif %}
+              <p><strong>Hourly Rate:</strong> ${{ freelancer_profile.hourly_rate }}</p>
+              <p><strong>Email:</strong> {{ user.email }}</p>
+            </div>
+            <div class="col-md-4 text-center">
+              {% if freelancer_profile.profile_picture %}
+                <img src="{{ freelancer_profile.profile_picture.url }}" alt="Profile" 
+                     class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+              {% else %}
+                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                     style="width: 150px; height: 150px; margin: 0 auto;">
+                  <i class="fas fa-user fa-3x text-white"></i>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5>Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <a href="{% url 'edit_profile' %}" class="btn btn-primary mb-2 d-block">Edit Profile</a>
+          <a href="#" class="btn btn-success mb-2 d-block">Find Jobs</a>
+          <a href="#" class="btn btn-info mb-2 d-block">My Proposals</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<a href="{% url 'edit_profile' %}">Edit Profile</a> | <a href="#">Browse Jobs</a>
 {% endblock %}

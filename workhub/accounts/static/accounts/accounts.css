@@ -1,0 +1,16 @@
+.role-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #e9ecef;
+}
+
+.role-card:hover {
+  border-color: #007bff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,123,255,0.2);
+}
+
+.role-card.selected {
+  border-color: #007bff;
+  background-color: #f8f9ff;
+}
