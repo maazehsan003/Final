@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.middleware.csrf import get_token
 from .models import Profile, FreelancerProfile, ClientProfile
+from jobs.models import Application, Job
 from django.http import JsonResponse
 from django.urls import reverse
 
@@ -132,13 +133,51 @@ def dashboard(request):
         freelancer_profile = FreelancerProfile.objects.filter(profile=profile).first()
         if not freelancer_profile:
             return redirect("setup_profile")
-        return render(request, "accounts/freelancer_dashboard.html", {"profile": profile, "freelancer_profile": freelancer_profile})
+        
+        # Calculate freelancer statistics
+        total_applications = request.user.application_set.count()
+        completed_jobs = request.user.assigned_jobs.filter(status='completed').count()
+        in_progress_jobs = request.user.assigned_jobs.filter(status='in_progress').count()
+        
+        # Split skills into a list
+        skills_list = []
+        if freelancer_profile.skills:
+            skills_list = [skill.strip() for skill in freelancer_profile.skills.split(',') if skill.strip()]
+        
+        context = {
+            'profile': profile,
+            'freelancer_profile': freelancer_profile,
+            'skills_list': skills_list,
+            'total_applications': total_applications,
+            'completed_jobs': completed_jobs,
+            'in_progress_jobs': in_progress_jobs,
+        }
+        
+        return render(request, "accounts/freelancer_dashboard.html", context)
     
     elif profile.role == "client":
         client_profile = ClientProfile.objects.filter(profile=profile).first()
         if not client_profile:
             return redirect("setup_profile")
-        return render(request, "accounts/client_dashboard.html", {"profile": profile, "client_profile": client_profile})
+        
+        # Calculate client statistics
+        posted_jobs_count = request.user.posted_jobs.count()
+        completed_jobs_count = request.user.posted_jobs.filter(status='completed').count()
+        
+        # Calculate total applications received on user's jobs
+        total_applications = 0
+        for job in request.user.posted_jobs.all():
+            total_applications += job.applications.count()
+        
+        context = {
+            'profile': profile,
+            'client_profile': client_profile,
+            'posted_jobs_count': posted_jobs_count,
+            'completed_jobs_count': completed_jobs_count,
+            'total_applications': total_applications,
+        }
+        
+        return render(request, "accounts/client_dashboard.html", context)
 
 @login_required
 def edit_profile(request):

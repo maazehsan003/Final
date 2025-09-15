@@ -1,0 +1,189 @@
+{% extends "jobs/layout2.html" %}
+{% load static %}
+
+{% block title %}Applications - Work Hub{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs" id="applicationTabs" role="tablist">
+        {% if user.profile.role == 'client' %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="received-tab" data-bs-toggle="tab" 
+                        data-bs-target="#received" type="button" role="tab">
+                    <i class="fas fa-inbox"></i> Applications Received 
+                    <span class="badge bg-primary ms-1">{{ client_applications.count }}</span>
+                </button>
+            </li>
+        {% endif %}
+        {% if user.profile.role == 'freelancer' %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="submitted-tab" data-bs-toggle="tab" 
+                        data-bs-target="#submitted" type="button" role="tab">
+                    <i class="fas fa-paper-plane"></i> Applications Submitted 
+                    <span class="badge bg-info ms-1">{{ freelancer_applications.count }}</span>
+                </button>
+            </li>
+        {% endif %}
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="applicationTabsContent">
+        <!-- Applications Received Tab (Client Only) -->
+        {% if user.profile.role == 'client' %}
+            <div class="tab-pane fade show active" id="received" role="tabpanel">
+                <div class="mt-4">
+                    {% if client_applications %}
+                        {% for application in client_applications %}
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">{{ application.job.title }}</h6>
+                                        <small class="text-muted">Applied by {{ application.freelancer.username }}</small>
+                                    </div>
+                                    <div>
+                                        {% if application.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif application.status == 'accepted' %}
+                                            <span class="badge bg-success">Accepted</span>
+                                        {% elif application.status == 'declined' %}
+                                            <span class="badge bg-danger">Declined</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h6>Cover Letter:</h6>
+                                            <p class="text-muted">{{ application.cover_letter|linebreaks }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-2">
+                                                <strong>Proposed Budget:</strong> ${{ application.proposed_budget }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Duration:</strong> {{ application.estimated_duration }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Applied:</strong> {{ application.applied_at|date:"M d, Y" }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if application.status == 'pending' %}
+                                        <div class="mt-3">
+                                            <button class="btn btn-success btn-sm me-2 accept-btn" 
+                                                    data-application-id="{{ application.id }}">
+                                                <i class="fas fa-check"></i> Accept
+                                            </button>
+                                            <button class="btn btn-danger btn-sm decline-btn" 
+                                                    data-application-id="{{ application.id }}">
+                                                <i class="fas fa-times"></i> Decline
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Applications Received</h4>
+                            <p class="text-muted">When freelancers apply to your jobs, they'll appear here.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Applications Submitted Tab (Freelancer Only) -->
+        {% if user.profile.role == 'freelancer' %}
+            <div class="tab-pane fade show active" id="submitted" role="tabpanel">
+                <div class="mt-4">
+                    {% if freelancer_applications %}
+                        {% for application in freelancer_applications %}
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">{{ application.job.title }}</h6>
+                                        <small class="text-muted">Posted by {{ application.job.client.username }}</small>
+                                    </div>
+                                    <div>
+                                        {% if application.status == 'pending' %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock"></i> Pending Review
+                                            </span>
+                                        {% elif application.status == 'accepted' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle"></i> Accepted
+                                            </span>
+                                        {% elif application.status == 'declined' %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle"></i> Declined
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <strong>Your Proposed Budget:</strong> ${{ application.proposed_budget }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Estimated Duration:</strong> {{ application.estimated_duration }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Applied On:</strong> {{ application.applied_at|date:"M d, Y" }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-2">
+                                                <strong>Job Budget:</strong> ${{ application.job.budget }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Deadline:</strong> {{ application.job.deadline }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Category:</strong> {{ application.job.get_category_display }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if application.status == 'accepted' %}
+                                        <div class="alert alert-success mt-3">
+                                            <i class="fas fa-trophy"></i>
+                                            <strong>Congratulations!</strong> Your application has been accepted. You can now start working on this project.
+                                        </div>
+                                    {% elif application.status == 'declined' %}
+                                        <div class="alert alert-info mt-3">
+                                            <i class="fas fa-info-circle"></i>
+                                            Your application was not selected for this project. Keep applying to other opportunities!
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-paper-plane fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Applications Submitted</h4>
+                            <p class="text-muted">Start applying to jobs to see your applications here.</p>
+                            <a href="{% url 'job_list' %}" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Browse Jobs
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<div id="application-data" style="display: none;">
+    <span data-update-url="{% url 'update_application_status' %}"></span>
+</div>
+
+<script src="{% static 'jobs/jobs.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,558 @@
+/* Job List Styles */
+.job-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.job-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-left-color: #007bff;
+    transform: translateY(-2px);
+}
+
+.job-card.selected {
+    border-left-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+/* Job Detail Panel */
+#job-detail-panel {
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+#job-detail-panel .card-body {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Application Status Badges */
+.badge {
+    font-size: 0.75em;
+    padding: 0.5em 0.75em;
+}
+
+.badge i {
+    margin-right: 0.25rem;
+}
+
+/* Form Styles */
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Dropdown Menu Positioning Fix */
+.navbar .dropdown-menu {
+    right: 0 !important;
+    left: auto !important;
+    min-width: 200px;
+    z-index: 1050;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.navbar .dropdown-menu-end {
+    --bs-position: end;
+}
+
+.navbar .dropdown-toggle::after {
+    margin-left: 0.255em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #job-detail-panel {
+        position: relative !important;
+        top: 0 !important;
+        margin-top: 20px;
+    }
+    
+    .job-card {
+        margin-bottom: 15px;
+    }
+    
+    .navbar .dropdown-menu {
+        position: absolute !important;
+        transform: none !important;
+        left: auto !important;
+        right: 10px !important;
+        min-width: 180px;
+    }
+}
+
+/* Animation for job details */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tab content styling */
+.tab-content {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 0.375rem 0.375rem;
+    padding: 1.5rem;
+    background-color: white;
+}
+
+/* Application cards */
+.application-card {
+    transition: all 0.2s ease;
+}
+
+.application-card:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Status indicators */
+.status-pending {
+    border-left: 4px solid #ffc107;
+}
+
+.status-accepted {
+    border-left: 4px solid #28a745;
+}
+
+.status-declined {
+    border-left: 4px solid #dc3545;
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Progress bar styling */
+.progress {
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+/* Alert styling */
+.alert {
+    border: none;
+    border-radius: 10px;
+}
+
+/* Empty state styling */
+.empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Card hover effects */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Sticky navigation */
+.sticky-top {
+    z-index: 1020;
+}
+
+/* Custom scrollbar for detail panel */
+#job-detail-panel .card-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+#job-detail-panel .card-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#job-detail-panel .card-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#job-detail-panel .card-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Fix for Bootstrap navbar overflow issues */
+.navbar {
+    position: relative;
+    overflow: visible;
+}
+
+.navbar-nav {
+    position: static;
+}
+
+/* Ensure dropdown appears above other content */
+.navbar .nav-item.dropdown {
+    position: static;
+}
+
+@media (min-width: 992px) {
+    .navbar .nav-item.dropdown {
+        position: relative;
+    }
+}
+
+/* Additional dropdown menu fixes */
+.dropdown-menu.show {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+
+.dropdown-menu {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Toast Styles */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.professional-toast {
+    min-width: 350px;
+    backdrop-filter: blur(10px);
+    border: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.professional-toast.success {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.95), rgba(25, 135, 84, 0.95));
+    color: white;
+}
+
+.professional-toast.info {
+    background: linear-gradient(135deg, rgba(13, 202, 240, 0.95), rgba(13, 110, 253, 0.95));
+    color: white;
+}
+
+.professional-toast.warning {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.95), rgba(255, 143, 0, 0.95));
+    color: white;
+}
+
+.professional-toast.error {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.95), rgba(176, 42, 55, 0.95));
+    color: white;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+}
+
+.toast-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.toast-message {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.toast-close {
+    color: white;
+    opacity: 0.7;
+}
+
+.toast-close:hover {
+    opacity: 1;
+    color: white;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.professional-toast.show {
+    animation: slideInRight 0.3s ease-out;
+}
+
+/* ==== NEW SEARCH-SPECIFIC STYLES ==== */
+
+/* Search highlight styling */
+.search-highlight {
+    background-color: #fff3cd;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 500;
+    border: 1px solid #ffeaa7;
+}
+
+/* Search input styling */
+#job-search:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+
+/* Clear search button */
+#clear-search {
+    border-left: none;
+    transition: all 0.2s ease;
+}
+
+#clear-search:hover {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    transform: scale(1.05);
+}
+
+#clear-search:active {
+    transform: scale(0.95);
+}
+
+/* Enhanced job card hover effects */
+.job-card {
+    transition: all 0.3s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-left-color: #007bff;
+}
+
+/* Search results info animation */
+#search-results-info {
+    animation: searchResultsFadeIn 0.3s ease-in;
+}
+
+@keyframes searchResultsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive search adjustments */
+@media (max-width: 768px) {
+    .row > .col-md-8, 
+    .row > .col-md-4 {
+        margin-bottom: 1rem;
+    }
+    
+    .input-group {
+        flex-wrap: nowrap;
+    }
+    
+    #job-search {
+        min-width: 0;
+        flex: 1;
+    }
+    
+    #category-filter {
+        margin-top: 10px;
+    }
+}
+
+/* Loading state for search */
+.searching {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.searching::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+}
+
+/* Enhanced no-results styling */
+#no-results-message {
+    animation: slideInUp 0.3s ease-out;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Search hint styling */
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border: none;
+    color: #0c5460;
+}
+
+/* Category filter styling */
+#category-filter:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Keyboard shortcut styling in hints */
+kbd {
+    background-color: #007bff;
+    color: white;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+/* Search container enhancements */
+.card .card-body {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* Results counter styling */
+#results-count {
+    font-weight: 600;
+    color: #007bff;
+}
+
+/* Reset search button styling */
+#reset-search {
+    transition: all 0.3s ease;
+}
+
+#reset-search:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Search term display styling */
+#search-term-display {
+    font-style: italic;
+    color: #6c757d;
+}
+
+/* Input group enhancements */
+.input-group .form-control {
+    z-index: 1;
+}
+
+.input-group .form-select {
+    z-index: 1;
+}
+
+/* Focus states for accessibility */
+.input-group-text:focus-within {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Enhanced search results area */
+.job-listings-container {
+    min-height: 400px;
+    position: relative;
+}
+
+/* Smooth transitions for filtered content */
+.job-card {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.job-card.hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Search statistics styling */
+.search-stats {
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+}
+
+/* Loading spinner for search */
+.search-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
