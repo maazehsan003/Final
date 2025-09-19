@@ -5,6 +5,45 @@
   <div class="row">
     <div class="col-md-8">
       <h2>Welcome back, {{ freelancer_profile.first_name }}!</h2>
+      
+      <!-- Wallet Section for Freelancers -->
+      <div class="card mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h5><i class="fas fa-wallet"></i> My Wallet</h5>
+              <div style="font-size: 2em; font-weight: bold;">${{ wallet.balance }}</div>
+              <small>Available Balance</small>
+              
+              {% if pending_earnings > 0 %}
+                <div class="mt-2 p-2" style="background: rgba(255,255,255,0.1); border-radius: 5px;">
+                  <strong><i class="fas fa-clock"></i> Pending Earnings: ${{ pending_earnings }}</strong>
+                  <br><small>Complete your jobs to claim these payments</small>
+                </div>
+              {% endif %}
+              
+              <div class="row mt-3 small">
+                <div class="col-6">
+                  <strong>Total Earned:</strong> ${{ total_earnings }}
+                </div>
+                <div class="col-6">
+                  <strong>Jobs Completed:</strong> {{ completed_jobs }}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <a href="{% url 'payments:wallet' %}" class="btn btn-light btn-lg mb-2">
+                <i class="fas fa-cog"></i> Manage Wallet
+              </a>
+              <br>
+              <a href="{% url 'payments:payment_history' %}" class="btn btn-outline-light">
+                <i class="fas fa-history"></i> Payment History
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header">
           <h4><i class="fas fa-user-tie"></i> Your Freelancer Profile</h4>
@@ -100,6 +139,15 @@
           </div>
         </div>
       </div>
+
+      <!-- Payment Status Alerts -->
+      {% if pending_earnings > 0 %}
+      <div class="alert alert-warning mt-4">
+        <i class="fas fa-coins"></i>
+        <strong>You have payments ready to claim!</strong><br>
+        Complete your jobs and visit your <a href="{% url 'payments:wallet' %}" class="alert-link">wallet</a> to claim ${{ pending_earnings }} in pending payments.
+      </div>
+      {% endif %}
     </div>
     <br>
     
@@ -109,7 +157,10 @@
           <h5><i class="fas fa-rocket"></i> Quick Actions</h5>
         </div>
         <div class="card-body">
-          <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary mb-2 d-block">
+          <a href="{% url 'payments:wallet' %}" class="btn btn-outline-primary mb-2 d-block">
+            <i class="fas fa-wallet"></i> Manage Wallet
+          </a>
+          <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary mb-2 d-block">
             <i class="fas fa-user-edit"></i> Edit Profile
           </a>
           <a href="{% url 'job_list' %}" class="btn btn-success mb-2 d-block">

@@ -8,6 +8,8 @@ from .models import Profile, FreelancerProfile, ClientProfile
 from jobs.models import Application, Job
 from django.http import JsonResponse
 from django.urls import reverse
+from payments.models import Wallet
+from django.db import models
 
 def register(request):
     if request.user.is_authenticated:
@@ -128,6 +130,9 @@ def dashboard(request):
     if not profile or not profile.role:
         return redirect("register")
     
+    # Create wallet if it doesn't exist
+    wallet, created = Wallet.objects.get_or_create(user=request.user)
+    
     # Check if profile setup is complete
     if profile.role == "freelancer":
         freelancer_profile = FreelancerProfile.objects.filter(profile=profile).first()
@@ -138,6 +143,20 @@ def dashboard(request):
         total_applications = request.user.application_set.count()
         completed_jobs = request.user.assigned_jobs.filter(status='completed').count()
         in_progress_jobs = request.user.assigned_jobs.filter(status='in_progress').count()
+        
+        # Get earnings (completed payments)
+        from payments.models import Payment
+        total_earnings = Payment.objects.filter(
+            to_user=request.user,
+            status='completed',
+            payment_type='job_payment'
+        ).aggregate(total=models.Sum('amount'))['total'] or 0
+        
+        pending_earnings = Payment.objects.filter(
+            to_user=request.user,
+            status='on_hold',
+            payment_type='job_payment'
+        ).aggregate(total=models.Sum('amount'))['total'] or 0
         
         # Split skills into a list
         skills_list = []
@@ -151,6 +170,9 @@ def dashboard(request):
             'total_applications': total_applications,
             'completed_jobs': completed_jobs,
             'in_progress_jobs': in_progress_jobs,
+            'wallet': wallet,
+            'total_earnings': total_earnings,
+            'pending_earnings': pending_earnings,
         }
         
         return render(request, "accounts/freelancer_dashboard.html", context)
@@ -163,22 +185,41 @@ def dashboard(request):
         # Calculate client statistics
         posted_jobs_count = request.user.posted_jobs.count()
         completed_jobs_count = request.user.posted_jobs.filter(status='completed').count()
+        in_progress_jobs_count = request.user.posted_jobs.filter(status='in_progress').count()
         
         # Calculate total applications received on user's jobs
         total_applications = 0
         for job in request.user.posted_jobs.all():
             total_applications += job.applications.count()
         
+        # Calculate total spent and pending payments
+        from payments.models import Payment
+        total_spent = Payment.objects.filter(
+            from_user=request.user,
+            status='completed',
+            payment_type='job_payment'
+        ).aggregate(total=models.Sum('amount'))['total'] or 0
+        
+        pending_payments = Payment.objects.filter(
+            from_user=request.user,
+            status='on_hold',
+            payment_type='job_payment'
+        ).aggregate(total=models.Sum('amount'))['total'] or 0
+        
         context = {
             'profile': profile,
             'client_profile': client_profile,
             'posted_jobs_count': posted_jobs_count,
             'completed_jobs_count': completed_jobs_count,
+            'in_progress_jobs_count': in_progress_jobs_count,
             'total_applications': total_applications,
+            'wallet': wallet,
+            'total_spent': total_spent,
+            'pending_payments': pending_payments,
         }
         
         return render(request, "accounts/client_dashboard.html", context)
-
+    
 @login_required
 def edit_profile(request):
     profile = Profile.objects.filter(user=request.user).first()

@@ -4,6 +4,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import Job, Application
+from payments.models import Wallet, Payment, Transaction
+from django.db import transaction
+from django.utils import timezone
 import json
 from django.core.serializers import serialize
 
@@ -96,7 +99,7 @@ def applications(request):
 @login_required
 @require_POST
 def update_application_status(request):
-    """AJAX endpoint to accept/decline applications"""
+    """AJAX endpoint to accept/decline applications with payment integration"""
     data = json.loads(request.body)
     application_id = data.get('application_id')
     status = data.get('status')
@@ -108,26 +111,75 @@ def update_application_status(request):
         return JsonResponse({'success': False, 'error': 'Unauthorized'})
     
     if status in ['accepted', 'declined']:
-        application.status = status
-        application.save()
-        
-        # If accepted, update job status and assign freelancer
         if status == 'accepted':
-            application.job.status = 'in_progress'
-            application.job.freelancer = application.freelancer
-            application.job.save()
-            
-            # Decline other applications for this job
-            Application.objects.filter(job=application.job).exclude(id=application_id).update(status='declined')
-        
-        return JsonResponse({'success': True})
+            # Check if client has sufficient balance before accepting
+            try:
+                wallet, created = Wallet.objects.get_or_create(user=request.user)
+                amount = application.proposed_budget
+                
+                if not wallet.can_withdraw(amount):
+                    return JsonResponse({
+                        'success': False, 
+                        'error': f'Insufficient balance. You need ${amount} but only have ${wallet.balance}. Please top up your wallet first.',
+                        'insufficient_funds': True
+                    })
+                
+                with transaction.atomic():
+                    # Update application status
+                    application.status = status
+                    application.save()
+                    
+                    # Update job status and assign freelancer
+                    application.job.status = 'in_progress'
+                    application.job.freelancer = application.freelancer
+                    application.job.save()
+                    
+                    # Create payment on hold
+                    if not wallet.deduct_funds(amount):
+                        return JsonResponse({'success': False, 'error': 'Failed to deduct funds'})
+                    
+                    payment = Payment.objects.create(
+                        job=application.job,
+                        from_user=request.user,
+                        to_user=application.freelancer,
+                        amount=amount,
+                        status='on_hold',
+                        payment_type='job_payment',
+                        description=f'Payment for job: {application.job.title}'
+                    )
+                    
+                    # Create transaction record for client (debit)
+                    Transaction.objects.create(
+                        wallet=wallet,
+                        payment=payment,
+                        amount=amount,
+                        transaction_type='debit',
+                        description=f'Payment on hold for job: {application.job.title}',
+                        balance_after=wallet.balance
+                    )
+                    
+                    # Decline other applications for this job
+                    Application.objects.filter(job=application.job).exclude(id=application_id).update(status='declined')
+                
+                return JsonResponse({
+                    'success': True, 
+                    'message': f'Application accepted and payment of ${amount} placed on hold'
+                })
+                
+            except Exception as e:
+                return JsonResponse({'success': False, 'error': str(e)})
+        else:
+            # Just decline the application
+            application.status = status
+            application.save()
+            return JsonResponse({'success': True, 'message': 'Application declined'})
     
     return JsonResponse({'success': False, 'error': 'Invalid status'})
 
 @login_required
 @require_POST
 def complete_job(request, job_id):
-    """Allow freelancer to mark job as completed"""
+    """Allow freelancer to mark job as completed and trigger payment release"""
     job = get_object_or_404(Job, id=job_id)
     
     # Check if user is the assigned freelancer
@@ -140,11 +192,48 @@ def complete_job(request, job_id):
         messages.error(request, 'This job cannot be completed at this time.')
         return redirect('my_jobs')
     
-    # Mark job as completed
-    job.status = 'completed'
-    job.save()
+    try:
+        with transaction.atomic():
+            # Mark job as completed
+            job.status = 'completed'
+            job.save()
+            
+            # Find and release payment
+            payment = Payment.objects.filter(
+                job=job, 
+                status='on_hold', 
+                to_user=request.user
+            ).first()
+            
+            if payment:
+                # Create or get freelancer's wallet
+                freelancer_wallet, created = Wallet.objects.get_or_create(user=request.user)
+                
+                # Add funds to freelancer's wallet
+                freelancer_wallet.add_funds(payment.amount)
+                
+                # Update payment status
+                payment.status = 'completed'
+                payment.completed_at = timezone.now()
+                payment.save()
+                
+                # Create transaction record for freelancer (credit)
+                Transaction.objects.create(
+                    wallet=freelancer_wallet,
+                    payment=payment,
+                    amount=payment.amount,
+                    transaction_type='credit',
+                    description=f'Payment received for job: {job.title}',
+                    balance_after=freelancer_wallet.balance
+                )
+                
+                messages.success(request, f'Job "{job.title}" completed! Payment of ${payment.amount} has been added to your wallet.')
+            else:
+                messages.success(request, f'Job "{job.title}" has been marked as completed!')
+            
+    except Exception as e:
+        messages.error(request, f'An error occurred: {str(e)}')
     
-    messages.success(request, f'Job "{job.title}" has been marked as completed!')
     return redirect('my_jobs')
 
 @login_required

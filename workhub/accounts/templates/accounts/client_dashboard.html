@@ -5,6 +5,51 @@
   <div class="row">
     <div class="col-md-8">
       <h2>Welcome back, {{ client_profile.first_name }}!</h2>
+      
+      <!-- Wallet Section for Clients -->
+      <div class="card mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h5><i class="fas fa-wallet"></i> My Wallet</h5>
+              <div style="font-size: 2em; font-weight: bold;">${{ wallet.balance }}</div>
+              <small>Available Balance</small>
+              
+              {% if pending_payments > 0 %}
+                <div class="mt-2 p-2" style="background: rgba(255,255,255,0.1); border-radius: 5px;">
+                  <strong><i class="fas fa-clock"></i> Payments On Hold: ${{ pending_payments }}</strong>
+                  <br><small>Payments held for ongoing projects</small>
+                </div>
+              {% endif %}
+              
+              <div class="row mt-3 small">
+                <div class="col-6">
+                  <strong>Total Spent:</strong> ${{ total_spent }}
+                </div>
+                <div class="col-6">
+                  <strong>Projects Completed:</strong> {{ completed_jobs_count }}
+                </div>
+              </div>
+              
+              {% if wallet.balance < 100 %}
+                <div class="mt-2 p-2" style="background: rgba(255,193,7,0.3); border-radius: 4px; font-size: 0.85em;">
+                  <i class="fas fa-exclamation-triangle"></i> Low balance - Consider topping up your wallet to accept more applications
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-md-4 text-center">
+              <a href="{% url 'payments:wallet' %}" class="btn btn-light btn-lg mb-2">
+                <i class="fas fa-cog"></i> Manage Wallet
+              </a>
+              <br>
+              <a href="{% url 'payments:payment_history' %}" class="btn btn-outline-light">
+                <i class="fas fa-history"></i> Payment History
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header">
           <h4><i class="fas fa-user-tie"></i> Your Client Profile</h4>
@@ -85,6 +130,16 @@
           </div>
         </div>
       </div>
+
+      <!-- Low Balance Alert for Clients -->
+      {% if wallet.balance < 50 %}
+      <div class="alert alert-danger mt-4">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Low Wallet Balance!</strong><br>
+        Your current balance (${{ wallet.balance }}) may not be sufficient to accept new applications. 
+        <a href="{% url 'payments:wallet' %}" class="alert-link">Top up your wallet</a> to continue hiring.
+      </div>
+      {% endif %}
     </div>
     
     <div class="col-md-4">
@@ -93,7 +148,10 @@
           <h5><i class="fas fa-rocket"></i> Quick Actions</h5>
         </div>
         <div class="card-body">
-          <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary mb-2 d-block">
+          <a href="{% url 'payments:wallet' %}" class="btn btn-outline-primary mb-2 d-block">
+            <i class="fas fa-wallet"></i> Manage Wallet
+          </a>
+          <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary mb-2 d-block">
             <i class="fas fa-user-edit"></i> Edit Profile
           </a>
           <a href="{% url 'post_job' %}" class="btn btn-success mb-2 d-block">
