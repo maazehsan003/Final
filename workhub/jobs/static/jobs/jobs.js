@@ -1,4 +1,4 @@
-// Job List + Applications Management JavaScript - FINAL FIXED VERSION
+// Job List + Applications Management JavaScript - WITH PROPER MODAL POPUPS
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Job & Applications JavaScript loaded');
@@ -8,6 +8,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const detailContent = document.getElementById('job-detail-content');
     const closeDetailBtn = document.getElementById('close-detail');
     const loadingOverlay = document.getElementById('loading-overlay');
+
+    // Modal elements
+    const confirmationModal = document.getElementById('confirmationModal');
+    const resultModal = document.getElementById('resultModal');
+    let confirmationModalInstance = null;
+    let resultModalInstance = null;
+
+    // Initialize Bootstrap modals
+    if (typeof bootstrap !== 'undefined') {
+        if (confirmationModal) confirmationModalInstance = new bootstrap.Modal(confirmationModal);
+        if (resultModal) resultModalInstance = new bootstrap.Modal(resultModal);
+    }
 
     // Initialize all features
     initJobList();
@@ -57,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error loading job details:', error);
-                showErrorMessage('Failed to load job details. Please try again.');
+                showResultModal('error', 'Error', 'Failed to load job details. Please try again.');
                 showLoading(false);
             });
     }
@@ -81,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    /** ---------------- SEARCH ---------------- **/
+    /** ---------------- SEARCH (FIXED CATEGORY FILTERING) ---------------- **/
     function initSearchFeatures() {
         const searchInput = document.getElementById('job-search');
         const categoryFilter = document.getElementById('category-filter');
@@ -106,9 +118,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 const description = card.querySelector('.job-description')?.textContent.toLowerCase() || '';
                 const categoryText = card.querySelector('.job-category')?.textContent.toLowerCase() || '';
                 const categoryValue = card.getAttribute('data-category') || '';
+                const categoryDisplayText = card.querySelector('.job-category')?.textContent || '';
 
-                const textMatch = !searchTerm || title.includes(searchTerm) || description.includes(searchTerm) || categoryText.includes(searchTerm);
-                const categoryMatch = !selectedCategory || categoryValue === selectedCategory;
+                const textMatch = !searchTerm || 
+                    title.includes(searchTerm) || 
+                    description.includes(searchTerm) || 
+                    categoryText.includes(searchTerm);
+
+                let categoryMatch = true;
+                if (selectedCategory) {
+                    const directMatch = categoryValue === selectedCategory;
+                    const categoryNames = {
+                        'web-development': ['web development', 'web dev'],
+                        'mobile-development': ['mobile development', 'mobile dev', 'mobile app'],
+                        'design': ['design', 'graphic design', 'ui/ux'],
+                        'writing': ['writing', 'content writing', 'copywriting'],
+                        'marketing': ['marketing', 'digital marketing'],
+                        'data-entry': ['data entry', 'data processing'],
+                        'other': ['other', 'miscellaneous']
+                    };
+                    
+                    const fallbackMatch = categoryNames[selectedCategory]?.some(name => 
+                        categoryDisplayText.toLowerCase().includes(name)
+                    ) || false;
+                    
+                    categoryMatch = directMatch || fallbackMatch;
+                }
 
                 if (textMatch && categoryMatch) {
                     card.style.display = 'block';
@@ -118,30 +153,90 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
+            // Update UI
             if (resultsCount) resultsCount.textContent = visibleCount;
 
-            if (searchResultsInfo) searchResultsInfo.style.display = (searchTerm || selectedCategory) ? 'block' : 'none';
-            if (noResultsMessage) noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
-            if (jobListings) jobListings.style.display = visibleCount === 0 ? 'none' : 'block';
+            const hasActiveSearch = searchTerm || selectedCategory;
+            if (searchResultsInfo) {
+                searchResultsInfo.style.display = hasActiveSearch ? 'block' : 'none';
+            }
+            
+            const shouldShowNoResults = hasActiveSearch && visibleCount === 0;
+            if (noResultsMessage) {
+                noResultsMessage.style.display = shouldShowNoResults ? 'block' : 'none';
+            }
+            
+            if (jobListings) {
+                jobListings.style.display = shouldShowNoResults ? 'none' : 'block';
+            }
+
+            // Update search term display
+            if (searchTermDisplay) {
+                let displayText = '';
+                if (searchTerm && selectedCategory) {
+                    displayText = ` for "${searchTerm}" in category "${categoryFilter.options[categoryFilter.selectedIndex].text}"`;
+                } else if (searchTerm) {
+                    displayText = ` for "${searchTerm}"`;
+                } else if (selectedCategory) {
+                    displayText = ` in category "${categoryFilter.options[categoryFilter.selectedIndex].text}"`;
+                }
+                searchTermDisplay.textContent = displayText;
+            }
         }
 
+        // Event listeners
         searchInput.addEventListener('input', () => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(performSearch, 300);
         });
+        
         categoryFilter.addEventListener('change', performSearch);
-        clearSearchBtn?.addEventListener('click', () => { searchInput.value = ''; categoryFilter.value = ''; performSearch(); });
-        resetSearchBtn?.addEventListener('click', () => { searchInput.value = ''; categoryFilter.value = ''; performSearch(); });
+        
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                categoryFilter.value = '';
+                performSearch();
+            });
+        }
+        
+        if (resetSearchBtn) {
+            resetSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                categoryFilter.value = '';
+                performSearch();
+            });
+        }
 
+        // Initial search to set up the display
         performSearch();
     }
 
-    /** ---------------- APPLICATIONS ---------------- **/
+    /** ---------------- APPLICATIONS WITH MODAL POPUPS ---------------- **/
     function initApplicationsPage() {
         const applicationCards = document.querySelectorAll('.application-card');
         applicationCards.forEach((card, index) => {
             card.style.animationDelay = `${index * 0.1}s`;
             card.classList.add('fade-in');
+        });
+
+        // Add event listeners for accept/decline buttons
+        document.addEventListener('click', function(event) {
+            const button = event.target.closest('.application-action');
+            if (button) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                const action = button.getAttribute('data-action');
+                const applicationId = button.getAttribute('data-application-id');
+                const freelancer = button.getAttribute('data-freelancer');
+                const amount = button.getAttribute('data-amount');
+                const jobTitle = button.getAttribute('data-job-title');
+                
+                if (action && applicationId) {
+                    showConfirmationModal(action, applicationId, freelancer, amount, jobTitle, button);
+                }
+            }
         });
 
         if (typeof bootstrap !== 'undefined') {
@@ -150,9 +245,113 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Export globally
-    window.updateApplicationStatus = updateApplicationStatus;
-    window.refreshApplications = refreshApplications;
+    /** ---------------- MODAL FUNCTIONS ---------------- **/
+    function showConfirmationModal(action, applicationId, freelancer, amount, jobTitle, button) {
+        if (!confirmationModalInstance) return;
+
+        const modal = document.getElementById('confirmationModal');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitleText = document.getElementById('modal-title-text');
+        const modalMessage = document.getElementById('modal-message');
+        const modalDetails = document.getElementById('modal-details');
+        const confirmBtn = document.getElementById('modal-confirm-btn');
+
+        // Reset modal classes
+        modal.className = 'modal fade';
+        
+        if (action === 'accept') {
+            modal.classList.add('modal-accept');
+            modalIcon.className = 'fas fa-check-circle me-2 text-success';
+            modalTitleText.textContent = 'Accept Application';
+            modalMessage.innerHTML = `
+                <strong>Are you sure you want to accept this application?</strong>
+                <br><small class="text-muted">This action will deduct the payment from your wallet and place it on hold.</small>
+            `;
+            
+            modalDetails.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Freelancer:</span>
+                    <span class="detail-value">${escapeHtml(freelancer)}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Job:</span>
+                    <span class="detail-value">${escapeHtml(jobTitle)}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Payment Amount:</span>
+                    <span class="detail-value">$${amount}</span>
+                </div>
+            `;
+            
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.innerHTML = '<i class="fas fa-check"></i> Accept & Pay';
+            
+        } else if (action === 'decline') {
+            modal.classList.add('modal-decline');
+            modalIcon.className = 'fas fa-times-circle me-2 text-danger';
+            modalTitleText.textContent = 'Decline Application';
+            modalMessage.innerHTML = `
+                <strong>Are you sure you want to decline this application?</strong>
+                <br><small class="text-muted">This action cannot be undone.</small>
+            `;
+            
+            modalDetails.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Freelancer:</span>
+                    <span class="detail-value">${escapeHtml(freelancer)}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Job:</span>
+                    <span class="detail-value">${escapeHtml(jobTitle)}</span>
+                </div>
+            `;
+            
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.innerHTML = '<i class="fas fa-times"></i> Decline';
+        }
+
+        // Set up confirmation button click
+        confirmBtn.onclick = function() {
+            confirmationModalInstance.hide();
+            const status = action === 'accept' ? 'accepted' : 'declined';
+            updateApplicationStatus(applicationId, status, button);
+        };
+
+        confirmationModalInstance.show();
+    }
+
+    function showResultModal(type, title, message, autoClose = false) {
+        if (!resultModalInstance) return;
+
+        const modal = document.getElementById('resultModal');
+        const modalIcon = document.getElementById('result-modal-icon');
+        const modalTitle = document.getElementById('result-modal-title');
+        const modalMessage = document.getElementById('result-modal-message');
+
+        // Reset modal classes
+        modal.className = 'modal fade';
+        
+        if (type === 'success') {
+            modal.classList.add('modal-success');
+            modalIcon.className = 'fas fa-check-circle me-2 text-success';
+        } else if (type === 'error') {
+            modal.classList.add('modal-error');
+            modalIcon.className = 'fas fa-exclamation-triangle me-2 text-danger';
+        } else {
+            modalIcon.className = 'fas fa-info-circle me-2 text-info';
+        }
+
+        modalTitle.textContent = title;
+        modalMessage.innerHTML = message;
+
+        resultModalInstance.show();
+
+        if (autoClose) {
+            setTimeout(() => {
+                resultModalInstance.hide();
+            }, 3000);
+        }
+    }
 
     /** ---------------- UTILS ---------------- **/
     function getCSRFToken() {
@@ -169,6 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function escapeHtml(text) {
+        if (!text) return '';
         return text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[m]));
     }
 
@@ -176,64 +376,95 @@ document.addEventListener('DOMContentLoaded', function() {
         if (loadingOverlay) loadingOverlay.style.display = show ? 'block' : 'none';
     }
 
-    function showCustomAlert(type, title, message, duration = 5000) {
-        const alertDiv = document.createElement('div');
-        const alertClass = `alert-${type === 'error' ? 'danger' : type}`;
-        alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
-        alertDiv.style.cssText = 'top:20px;right:20px;z-index:9999;min-width:350px;max-width:500px;';
-        const icons = {success:'fas fa-check-circle',error:'fas fa-exclamation-triangle',warning:'fas fa-exclamation-triangle',info:'fas fa-info-circle'};
-        alertDiv.innerHTML = `<div class="d-flex align-items-center"><i class="${icons[type]} me-2"></i><div class="flex-grow-1"><strong>${title}:</strong> ${message}</div><button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button></div>`;
-        document.body.appendChild(alertDiv);
-        setTimeout(() => { if (alertDiv.parentNode) { alertDiv.style.opacity='0'; setTimeout(() => alertDiv.remove(),300);} }, duration);
-    }
-
-    function showSuccessMessage(msg){ showCustomAlert('success','Success',msg); }
-    function showErrorMessage(msg){ showCustomAlert('error','Error',msg); }
-
-    /** ---------------- ACTIONS ---------------- **/
-    function updateApplicationStatus(applicationId, status) {
-        const action = status === 'accepted' ? 'accept' : 'decline';
-        if (!confirm(`Are you sure you want to ${action} this application?`)) return;
-
-        const button = event?.target;
+    /** ---------------- ACTIONS WITH MODALS ---------------- **/
+    function updateApplicationStatus(applicationId, status, button = null) {
+        // Add loading state to button
         const originalText = button?.innerHTML;
-        if (button) { button.disabled = true; button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'; }
+        if (button) { 
+            button.disabled = true; 
+            button.classList.add('btn-loading');
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'; 
+        }
 
         const csrfToken = getCSRFToken();
         const applicationData = document.getElementById('application-data');
         const updateUrl = applicationData?.dataset.updateUrl || '/update-application-status/';
         const walletUrl = applicationData?.dataset.walletUrl || '/wallet/';
 
+        console.log(`Sending request to ${updateUrl} with applicationId=${applicationId}, status=${status}`);
+
         fetch(updateUrl, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json','X-CSRFToken': csrfToken},
-            body: JSON.stringify({ application_id: applicationId, status })
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ 
+                application_id: parseInt(applicationId), 
+                status: status 
+            })
         })
-        .then(res => res.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data);
+            
+            // Remove loading state
+            if (button) {
+                button.disabled = false;
+                button.classList.remove('btn-loading');
+                button.innerHTML = originalText;
+            }
+            
             if (data.success) {
-                showSuccessMessage(data.message || `Application ${status} successfully!`);
-                setTimeout(() => window.location.reload(), 1500);
+                showResultModal(
+                    'success', 
+                    'Success!', 
+                    data.message || `Application ${status} successfully!`
+                );
+                
+                // Reload page after showing success message
+                setTimeout(() => window.location.reload(), 2000);
+                
             } else if (data.insufficient_funds) {
-                showErrorMessage(data.error || 'Insufficient funds in wallet.');
-                if (confirm('Go to your wallet to add funds?')) window.location.href = walletUrl;
-                if (button) { button.disabled = false; button.innerHTML = originalText; }
+                const message = `
+                    ${data.error || 'Insufficient funds in wallet.'}<br><br>
+                    <div class="text-center">
+                        <a href="${walletUrl}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-wallet"></i> Go to Wallet
+                        </a>
+                    </div>
+                `;
+                showResultModal('error', 'Insufficient Funds', message);
+                
             } else {
-                showErrorMessage(data.error || 'Unknown error occurred.');
-                if (button) { button.disabled = false; button.innerHTML = originalText; }
+                showResultModal('error', 'Error', data.error || 'Unknown error occurred.');
             }
         })
         .catch(err => {
-            console.error(err);
-            showErrorMessage('An error occurred while updating the application.');
-            if (button) { button.disabled = false; button.innerHTML = originalText; }
+            console.error('Fetch error:', err);
+            
+            // Remove loading state
+            if (button) {
+                button.disabled = false;
+                button.classList.remove('btn-loading');
+                button.innerHTML = originalText;
+            }
+            
+            showResultModal('error', 'Network Error', 'An error occurred while updating the application. Please check your connection and try again.');
         });
     }
 
     function refreshApplications() {
-        showCustomAlert('info','Refreshing','Updating applications list...');
+        showResultModal('info', 'Refreshing', 'Updating applications list...', true);
         setTimeout(() => window.location.reload(), 1000);
     }
+
+    // Export globally
+    window.updateApplicationStatus = updateApplicationStatus;
+    window.refreshApplications = refreshApplications;
 
     /** ---------------- EXTRAS ---------------- **/
     function initFormHandling() {
@@ -270,7 +501,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function initKeyboardShortcuts() {
         document.addEventListener('keydown', e => {
             if (e.altKey && e.key === 'r') { e.preventDefault(); refreshApplications(); }
-            if (e.key === 'Escape') document.querySelectorAll('.alert .btn-close').forEach(btn => btn.click());
+            if (e.key === 'Escape') {
+                // Close modals on Escape
+                if (confirmationModalInstance && confirmationModal.classList.contains('show')) {
+                    confirmationModalInstance.hide();
+                }
+                if (resultModalInstance && resultModal.classList.contains('show')) {
+                    resultModalInstance.hide();
+                }
+                // Close other alerts
+                document.querySelectorAll('.alert .btn-close').forEach(btn => btn.click());
+            }
         });
     }
 
@@ -283,7 +524,70 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleResponsive() {
         const isMobile = window.innerWidth <= 768;
         document.querySelectorAll('.application-card').forEach(card => {
-            if (isMobile) card.classList.add('mobile-card'); else card.classList.remove('mobile-card');
+            if (isMobile) card.classList.add('mobile-card'); 
+            else card.classList.remove('mobile-card');
+        });
+        
+        // Adjust modal size for mobile
+        if (confirmationModal) {
+            if (isMobile) {
+                confirmationModal.querySelector('.modal-dialog').classList.add('modal-fullscreen-sm-down');
+            } else {
+                confirmationModal.querySelector('.modal-dialog').classList.remove('modal-fullscreen-sm-down');
+            }
+        }
+    }
+
+    /** ---------------- ADDITIONAL MODAL ENHANCEMENTS ---------------- **/
+    
+    // Auto-focus on modal buttons when opened
+    if (confirmationModal) {
+        confirmationModal.addEventListener('shown.bs.modal', function() {
+            const confirmBtn = document.getElementById('modal-confirm-btn');
+            if (confirmBtn) confirmBtn.focus();
+        });
+    }
+    
+    if (resultModal) {
+        resultModal.addEventListener('shown.bs.modal', function() {
+            const okBtn = resultModal.querySelector('.modal-footer .btn');
+            if (okBtn) okBtn.focus();
+        });
+    }
+    
+    // Handle Enter key in modals
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            if (confirmationModal && confirmationModal.classList.contains('show')) {
+                e.preventDefault();
+                const confirmBtn = document.getElementById('modal-confirm-btn');
+                if (confirmBtn && !confirmBtn.disabled) {
+                    confirmBtn.click();
+                }
+            }
+            if (resultModal && resultModal.classList.contains('show')) {
+                e.preventDefault();
+                const okBtn = resultModal.querySelector('.modal-footer .btn');
+                if (okBtn) {
+                    okBtn.click();
+                }
+            }
+        }
+    });
+    
+    // Prevent modal backdrop clicks from closing important modals
+    if (confirmationModal) {
+        confirmationModal.addEventListener('hide.bs.modal', function(e) {
+            // Allow closing only via buttons or escape key
+            const isBackdropClick = e.target === confirmationModal;
+            if (isBackdropClick) {
+                e.preventDefault();
+                // Optional: shake animation to indicate modal can't be closed by clicking outside
+                confirmationModal.querySelector('.modal-dialog').style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    confirmationModal.querySelector('.modal-dialog').style.animation = '';
+                }, 500);
+            }
         });
     }
 });

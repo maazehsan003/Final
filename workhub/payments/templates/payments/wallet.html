@@ -12,11 +12,12 @@
     </div>
 
     <div class="row">
-        <!-- Top Up and Quick Actions -->
+        <!-- Client: Top Up and Quick Actions -->
+        {% if user.profile.role == 'client' %}
         <div class="col-md-6 mb-4">
             <div class="card h-100">
                 <div class="card-header">
-                    <h5><i class="fas fa-credit-card"></i> Top Up Wallet</h5>
+                    <h5><i class="fas fa-credit-card"></i> Add Funds to Wallet</h5>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{% url 'payments:top_up_wallet' %}">
@@ -43,6 +44,41 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+
+        <!-- Freelancer: Withdraw and Quick Actions -->
+        {% if user.profile.role == 'freelancer' %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-money-bill-wave"></i> Withdraw Funds</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'payments:withdraw_funds' %}">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" name="amount" placeholder="Enter amount" 
+                                   min="1" max="{{ wallet.balance }}" step="0.01" required>
+                            <button type="submit" class="btn btn-success">Withdraw</button>
+                        </div>
+                    </form>
+                    <small class="text-muted">Withdraw funds from your wallet (simulation)</small>
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'payments:payment_history' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-history"></i> View Payment History
+                        </a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-success">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
         <!-- Wallet Stats -->
         <div class="col-md-6 mb-4">
@@ -66,6 +102,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> As a freelancer, you can only withdraw funds from your wallet. Funds are added when you complete jobs.
+                        </div>
                     {% else %}
                         <div class="row text-center">
                             <div class="col-6">
@@ -81,13 +121,12 @@
                                 </div>
                             </div>
                         </div>
-                    {% endif %}
-                    
-                    {% if wallet.balance < 50 and user.profile.role == 'client' %}
-                        <div class="alert alert-warning mt-3">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Low Balance!</strong> Consider topping up your wallet to accept more applications.
-                        </div>
+                        {% if wallet.balance < 50 %}
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Low Balance!</strong> Consider topping up your wallet to accept more applications.
+                            </div>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -218,6 +257,20 @@
 </div>
 
 <input type="hidden" id="releasePaymentUrl" value="{% url 'payments:release_payment' %}">
+
+<script>
+// Update the JavaScript for payment release
+document.addEventListener('DOMContentLoaded', function() {
+    const releaseButtons = document.querySelectorAll('.release-payment-btn');
+    
+    releaseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const jobId = this.getAttribute('data-job-id');
+            releasePayment(jobId);
+        });
+    });
+});
+</script>
 
 <script src="{% static 'payments/payments.js' %}"></script>
 {% endblock %}

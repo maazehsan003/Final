@@ -26,7 +26,7 @@ def post_job(request):
             client=request.user
         )
         messages.success(request, 'Job posted successfully!')
-        return redirect('job_list')
+        return redirect('my_jobs')
     
     return render(request, 'jobs/post_job.html')
 
