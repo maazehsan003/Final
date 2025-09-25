@@ -3,11 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from .models import Job, Application
+from .models import Job, Application, WorkSubmission, WorkFile
 from payments.models import Wallet, Payment, Transaction
 from django.db import transaction
 from django.utils import timezone
+from django.core.files.storage import default_storage
+from django.conf import settings
 import json
+import os
 from django.core.serializers import serialize
 
 def job_list(request):
@@ -175,26 +178,72 @@ def update_application_status(request):
             return JsonResponse({'success': True, 'message': 'Application declined'})
     
     return JsonResponse({'success': False, 'error': 'Invalid status'})
-
 @login_required
 @require_POST
-def complete_job(request, job_id):
-    """Allow freelancer to mark job as completed and trigger payment release"""
-    job = get_object_or_404(Job, id=job_id)
-    
-    # Check if user is the assigned freelancer
-    if job.freelancer != request.user:
-        messages.error(request, 'You are not authorized to complete this job.')
-        return redirect('my_jobs')
-    
-    # Check if job is in progress
-    if job.status != 'in_progress':
-        messages.error(request, 'This job cannot be completed at this time.')
-        return redirect('my_jobs')
-    
+def submit_work(request):
+    """Handle work submission with files, description, and automatic payment release"""
     try:
+        job_id = request.POST.get('job_id')
+        work_description = request.POST.get('work_description')
+        additional_notes = request.POST.get('additional_notes', '')
+        file_count = int(request.POST.get('file_count', 0))
+        
+        if not job_id or not work_description:
+            return JsonResponse({'success': False, 'error': 'Missing required fields'})
+        
+        job = get_object_or_404(Job, id=job_id)
+        
+        # Check if user is the assigned freelancer
+        if job.freelancer != request.user:
+            return JsonResponse({'success': False, 'error': 'Unauthorized'})
+        
+        # Check if job is in progress
+        if job.status != 'in_progress':
+            return JsonResponse({'success': False, 'error': 'Job is not in progress'})
+        
+        # Check if work already submitted
+        if WorkSubmission.objects.filter(job=job).exists():
+            return JsonResponse({'success': False, 'error': 'Work already submitted for this job'})
+        
         with transaction.atomic():
-            # Mark job as completed
+            # Create work submission
+            work_submission = WorkSubmission.objects.create(
+                job=job,
+                freelancer=request.user,
+                description=work_description,
+                additional_notes=additional_notes,
+                status='approved'  # Automatically approved since payment was already held
+            )
+            
+            # Handle file uploads
+            uploaded_files = []
+            for i in range(file_count):
+                file_key = f'work_files_{i}'
+                if file_key in request.FILES:
+                    uploaded_file = request.FILES[file_key]
+                    
+                    # Validate file size (50MB limit)
+                    if uploaded_file.size > 50 * 1024 * 1024:
+                        return JsonResponse({
+                            'success': False, 
+                            'error': f'File {uploaded_file.name} is too large. Maximum size is 50MB.'
+                        })
+                    
+                    # Save file
+                    file_path = f'work_submissions/{job.id}/{uploaded_file.name}'
+                    saved_path = default_storage.save(file_path, uploaded_file)
+                    
+                    # Create work file record
+                    WorkFile.objects.create(
+                        work_submission=work_submission,
+                        file=saved_path,
+                        original_name=uploaded_file.name,
+                        file_size=uploaded_file.size
+                    )
+                    
+                    uploaded_files.append(uploaded_file.name)
+            
+            # Mark job as completed and release payment automatically
             job.status = 'completed'
             job.save()
             
@@ -202,12 +251,12 @@ def complete_job(request, job_id):
             payment = Payment.objects.filter(
                 job=job, 
                 status='on_hold', 
-                to_user=request.user
+                to_user=job.freelancer
             ).first()
             
             if payment:
                 # Create or get freelancer's wallet
-                freelancer_wallet, created = Wallet.objects.get_or_create(user=request.user)
+                freelancer_wallet, created = Wallet.objects.get_or_create(user=job.freelancer)
                 
                 # Add funds to freelancer's wallet
                 freelancer_wallet.add_funds(payment.amount)
@@ -226,16 +275,17 @@ def complete_job(request, job_id):
                     description=f'Payment received for job: {job.title}',
                     balance_after=freelancer_wallet.balance
                 )
-                
-                messages.success(request, f'Job "{job.title}" completed! Payment of ${payment.amount} has been added to your wallet.')
-            else:
-                messages.success(request, f'Job "{job.title}" has been marked as completed!')
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Work submitted successfully! Payment of ${payment.amount if payment else job.budget} has been released to your account. Uploaded {len(uploaded_files)} files.',
+                'files': uploaded_files,
+                'payment_released': payment.amount if payment else job.budget
+            })
             
     except Exception as e:
-        messages.error(request, f'An error occurred: {str(e)}')
+        return JsonResponse({'success': False, 'error': str(e)})
     
-    return redirect('my_jobs')
-
 @login_required
 def my_jobs(request):
     # Jobs posted by user (client)
@@ -247,10 +297,45 @@ def my_jobs(request):
     # Completed jobs for freelancer
     completed_jobs = Job.objects.filter(freelancer=request.user, status='completed')
     
+    # Jobs with submitted work (for client review) - now includes both under_review and completed
+    # since work is automatically approved and completed when submitted
+    jobs_under_review = Job.objects.filter(
+        client=request.user, 
+        status__in=['under_review', 'completed']
+    ).filter(work_submission__isnull=False)
+    
     context = {
         'posted_jobs': posted_jobs,
         'assigned_jobs': assigned_jobs,
-        'completed_jobs': completed_jobs
+        'completed_jobs': completed_jobs,
+        'jobs_under_review': jobs_under_review,
     }
     
     return render(request, 'jobs/my_jobs.html', context)
+
+@login_required
+def view_work_submission(request, job_id):
+    """View submitted work details"""
+    job = get_object_or_404(Job, id=job_id)
+    
+    # Check authorization
+    if request.user != job.client and request.user != job.freelancer:
+        messages.error(request, 'You are not authorized to view this submission.')
+        return redirect('my_jobs')
+    
+    try:
+        work_submission = WorkSubmission.objects.get(job=job)
+        work_files = work_submission.work_files.all()
+        
+        context = {
+            'job': job,
+            'work_submission': work_submission,
+            'work_files': work_files,
+            'is_client': request.user == job.client,
+        }
+        
+        return render(request, 'jobs/submit_detail.html', context)
+        
+    except WorkSubmission.DoesNotExist:
+        messages.error(request, 'No work submission found for this job.')
+        return redirect('my_jobs')

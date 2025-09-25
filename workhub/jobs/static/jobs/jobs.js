@@ -1,4 +1,4 @@
-// Job List + Applications Management JavaScript - WITH PROPER MODAL POPUPS
+// Job List + Applications Management JavaScript 
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Job & Applications JavaScript loaded');
@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initKeyboardShortcuts();
     initPageVisibility();
     handleResponsive();
+    initWorkSubmissionModal();
 
     window.addEventListener('resize', handleResponsive);
 
@@ -243,6 +244,272 @@ document.addEventListener('DOMContentLoaded', function() {
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
         }
+    }
+
+    /** ---------------- WORK SUBMISSION MODAL ---------------- **/
+    function initWorkSubmissionModal() {
+        const modal = document.getElementById('submitWorkModal');
+        const form = document.getElementById('workSubmissionForm');
+        const fileInput = document.getElementById('workFiles');
+        const filePreview = document.getElementById('filePreview');
+        const fileList = document.getElementById('fileList');
+        const submitBtn = document.getElementById('submitWorkBtn');
+        const modalJobTitle = document.getElementById('modalJobTitle');
+        
+        if (!modal || !form) return; // Exit if modal elements don't exist
+        
+        let selectedFiles = [];
+        let currentJobId = null;
+        let modalInstance = null;
+        
+        if (typeof bootstrap !== 'undefined') {
+            modalInstance = new bootstrap.Modal(modal);
+        }
+        
+        // File input change handler
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                selectedFiles = [...selectedFiles, ...files];
+                updateFilePreview();
+            });
+        }
+        
+        // Update file preview
+        function updateFilePreview() {
+            if (!filePreview || !fileList) return;
+            
+            if (selectedFiles.length === 0) {
+                filePreview.style.display = 'none';
+                return;
+            }
+            
+            filePreview.style.display = 'block';
+            fileList.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = createFileItem(file, index);
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        // Create file item element
+        function createFileItem(file, index) {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            
+            const fileIcon = getFileIcon(file.name);
+            const fileSize = formatFileSize(file.size);
+            
+            div.innerHTML = `
+                <div class="file-info">
+                    <i class="fas ${fileIcon.icon} file-icon ${fileIcon.class}"></i>
+                    <span class="file-name">${file.name}</span>
+                    <span class="file-size">(${fileSize})</span>
+                </div>
+                <i class="fas fa-times file-remove" onclick="removeFile(${index})" title="Remove file"></i>
+            `;
+            
+            return div;
+        }
+        
+        // Remove file from selection
+        window.removeFile = function(index) {
+            selectedFiles.splice(index, 1);
+            updateFilePreview();
+            
+            // Update the file input
+            const dt = new DataTransfer();
+            selectedFiles.forEach(file => dt.items.add(file));
+            if (fileInput) fileInput.files = dt.files;
+        };
+        
+        // Get file icon based on extension
+        function getFileIcon(filename) {
+            const ext = filename.toLowerCase().split('.').pop();
+            
+            switch(ext) {
+                case 'pdf':
+                    return { icon: 'fa-file-pdf', class: 'pdf' };
+                case 'doc':
+                case 'docx':
+                    return { icon: 'fa-file-word', class: 'doc' };
+                case 'zip':
+                case 'rar':
+                    return { icon: 'fa-file-archive', class: 'zip' };
+                case 'jpg':
+                case 'jpeg':
+                case 'png':
+                case 'gif':
+                    return { icon: 'fa-file-image', class: 'image' };
+                case 'mp4':
+                case 'avi':
+                case 'mov':
+                    return { icon: 'fa-file-video', class: 'video' };
+                case 'txt':
+                    return { icon: 'fa-file-alt', class: 'default' };
+                default:
+                    return { icon: 'fa-file', class: 'default' };
+            }
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Validate file size
+        function validateFiles() {
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            
+            for (let file of selectedFiles) {
+                if (file.size > maxSize) {
+                    alert(`File "${file.name}" is too large. Maximum size is 50MB.`);
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Form submission
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!validateFiles()) {
+                    return;
+                }
+                
+                // Show loading state
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('btn-loading');
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                }
+                
+                // Create FormData
+                const formData = new FormData();
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                if (csrfToken) {
+                    formData.append('csrfmiddlewaretoken', csrfToken.value);
+                }
+                
+                formData.append('job_id', currentJobId);
+                
+                const workDescription = document.getElementById('workDescription');
+                const additionalNotes = document.getElementById('additionalNotes');
+                
+                if (workDescription) formData.append('work_description', workDescription.value);
+                if (additionalNotes) formData.append('additional_notes', additionalNotes.value);
+                
+                // Add files
+                selectedFiles.forEach((file, index) => {
+                    formData.append(`work_files_${index}`, file);
+                });
+                formData.append('file_count', selectedFiles.length);
+                
+                // Submit to server - Use relative URL
+                fetch('/submit-work/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrfToken ? csrfToken.value : ''
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        if (modalInstance) modalInstance.hide();
+                        
+                        // Use toast notification instead of alert
+                        if (window.toast) {
+                            window.toast.success(
+                                'Work Submitted Successfully!', 
+                                'Your work has been submitted and the client will be notified. The job status has been updated to "Under Review".',
+                                4000
+                            );
+                        }
+                        
+                        // Reload page after a short delay to show the toast
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        // Use toast for errors too
+                        if (window.toast) {
+                            window.toast.error(
+                                'Submission Failed', 
+                                data.error || 'Failed to submit work. Please try again.',
+                                6000
+                            );
+                        } else {
+                            alert('Error: ' + (data.error || 'Failed to submit work'));
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    
+                    // Use toast for network errors too
+                    if (window.toast) {
+                        window.toast.error(
+                            'Network Error', 
+                            'An error occurred while submitting your work. Please check your connection and try again.',
+                            6000
+                        );
+                    } else {
+                        alert('An error occurred while submitting your work. Please try again.');
+                    }
+                })
+                .finally(() => {
+                    // Reset loading state
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('btn-loading');
+                        submitBtn.innerHTML = '<i class="fas fa-upload"></i> Submit Work';
+                    }
+                });
+            });
+        }
+        
+        // Modal show event
+        if (modal) {
+            modal.addEventListener('shown.bs.modal', function() {
+                const workDescription = document.getElementById('workDescription');
+                if (workDescription) workDescription.focus();
+            });
+        }
+        
+        // Modal hide event - reset form
+        if (modal) {
+            modal.addEventListener('hidden.bs.modal', function() {
+                if (form) form.reset();
+                selectedFiles = [];
+                if (filePreview) filePreview.style.display = 'none';
+                if (fileList) fileList.innerHTML = '';
+                const agreeTerms = document.getElementById('agreeTerms');
+                if (agreeTerms) agreeTerms.checked = false;
+            });
+        }
+        
+        // Expose function to open modal
+        window.openSubmitWorkModal = function(jobId, jobTitle) {
+            currentJobId = jobId;
+            if (modalJobTitle) modalJobTitle.textContent = jobTitle;
+            if (modalInstance) modalInstance.show();
+        };
     }
 
     /** ---------------- MODAL FUNCTIONS ---------------- **/
@@ -492,12 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function initAlerts() {
-        document.querySelectorAll('.alert:not(.alert-dismissible)').forEach(alert => {
-            setTimeout(() => { alert.style.opacity='0'; setTimeout(() => alert.remove(),500); }, 5000);
-        });
-    }
-
+    
     function initKeyboardShortcuts() {
         document.addEventListener('keydown', e => {
             if (e.altKey && e.key === 'r') { e.preventDefault(); refreshApplications(); }

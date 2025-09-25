@@ -1104,3 +1104,237 @@ kbd {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+/* Enhanced Modal Styling */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+.file-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.file-upload-area:hover {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.file-upload-area input[type="file"] {
+    border: none;
+    background: transparent;
+}
+
+.file-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 0.5rem;
+    background: #f8f9fa;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+    background: white;
+    border-radius: 3px;
+    margin-bottom: 0.25rem;
+}
+
+.file-item:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.file-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.file-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+    min-width: 50px;
+    text-align: center;
+}
+
+.file-meta {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.file-name {
+    font-weight: 500;
+    color: #333;
+    margin-right: 0.5rem;
+}
+
+.file-size {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.file-remove {
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.file-remove:hover {
+    background-color: #f8d7da;
+}
+
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -8px 0 0 -8px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.modal-lg {
+    max-width: 800px;
+}
+
+/* File type icons */
+.file-icon.pdf { color: #dc3545; }
+.file-icon.doc, .file-icon.docx { color: #007bff; }
+.file-icon.zip, .file-icon.rar { color: #6c757d; }
+.file-icon.image { color: #28a745; }
+.file-icon.video { color: #ffc107; }
+.file-icon.default { color: #6c757d; }
+
+.work-submission-header {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.submission-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+}
+
+.download-btn {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #004494);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-approved {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.submission-actions {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.btn-action {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 150px;
+    justify-content: center;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-approve {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.btn-approve:hover {
+    background: linear-gradient(135deg, #218838, #1ca085);
+    color: white;
+}
+
+.btn-revision {
+    background: linear-gradient(135deg, #ffc107, #ffb300);
+    color: white;
+}
+
+.btn-revision:hover {
+    background: linear-gradient(135deg, #e0a800, #ff8f00);
+    color: white;
+}
