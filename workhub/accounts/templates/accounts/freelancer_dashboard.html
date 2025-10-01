@@ -169,8 +169,17 @@
           <a href="{% url 'applications' %}" class="btn btn-info mb-2 d-block">
             <i class="fas fa-file-alt"></i> My Applications
           </a>
-          <a href="{% url 'my_jobs' %}" class="btn btn-warning mb-2 d-block">
+    <a href="{% url 'my_jobs' %}" class="btn btn-warning mb-2 d-block">
             <i class="fas fa-tasks"></i> My Jobs
+          </a>
+          <a href="{% url 'reviews:my_reviews' %}" class="btn btn-outline-info mb-2 d-block">
+            <i class="fas fa-star"></i> My Reviews
+          </a>
+          <a href="{% url 'reviews:freelancer_reviews' user.username %}" class="btn btn-outline-secondary mb-2 d-block">
+            <i class="fas fa-user-circle"></i> Public Profile
+          </a>
+          <a href="{% url 'payments:payment_history' %}" class="btn btn-outline-dark mb-2 d-block">
+            <i class="fas fa-history"></i> Payment History
           </a>
         </div>
       </div>

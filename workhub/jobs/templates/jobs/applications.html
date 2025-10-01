@@ -71,7 +71,12 @@
                                 data-job-title="{{ application.job.title }}">
                             <i class="fas fa-times"></i> Decline
                         </button>
+
+                        <a href="{% url 'reviews:freelancer_reviews' application.freelancer.username %}" class="btn btn-info">
+                            <i class="fas fa-user-circle"></i> View Profile
+                        </a>
                     </div>
+                    
                 {% endif %}
             </div>
         {% endfor %}

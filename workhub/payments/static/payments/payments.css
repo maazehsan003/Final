@@ -1,3 +1,82 @@
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.professional-toast {
+    min-width: 350px;
+    backdrop-filter: blur(10px);
+    border: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.professional-toast.success {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.95), rgba(25, 135, 84, 0.95));
+    color: white;
+}
+
+.professional-toast.info {
+    background: linear-gradient(135deg, rgba(13, 202, 240, 0.95), rgba(13, 110, 253, 0.95));
+    color: white;
+}
+
+.professional-toast.warning {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.95), rgba(255, 143, 0, 0.95));
+    color: white;
+}
+
+.professional-toast.error {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.95), rgba(176, 42, 55, 0.95));
+    color: white;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+}
+
+.toast-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.toast-message {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.toast-close {
+    color: white;
+    opacity: 0.7;
+}
+
+.toast-close:hover {
+    opacity: 1;
+    color: white;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.professional-toast.show {
+    animation: slideInRight 0.3s ease-out;
+}
+
 .wallet-stats {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 10px;
@@ -27,114 +106,114 @@
     }
 }
 body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header h1 {
-            margin: 0;
-            color: #333;
-        }
-        .nav-links {
-            margin-top: 15px;
-        }
-        .nav-links a {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        .nav-links a:hover {
-            background-color: #0056b3;
-        }
-        .section {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .section-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #333;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-        }
-        .payment-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .payment-table th,
-        .payment-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .payment-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        .payment-table tr:hover {
-            background-color: #f8f9fa;
-        }
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-        .status-on-hold {
-            background-color: #d1ecf1;
-            color: #0c5460;
-        }
-        .status-completed {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .status-cancelled {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .status-refunded {
-            background-color: #e2e3e5;
-            color: #383d41;
-        }
-        .amount-sent {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        .amount-received {
-            color: #28a745;
-            font-weight: bold;
-        }
-        .no-data {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 40px;
-        }
-        .payment-type {
-            font-size: 0.9em;
-            color: #666;
-        }
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.header {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.header h1 {
+    margin: 0;
+    color: #333;
+}
+.nav-links {
+    margin-top: 15px;
+}
+.nav-links a {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+.nav-links a:hover {
+    background-color: #0056b3;
+}
+.section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.section-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.payment-table th,
+.payment-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+.payment-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+.payment-table tr:hover {
+    background-color: #f8f9fa;
+}
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.status-on-hold {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.status-refunded {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+.amount-sent {
+    color: #dc3545;
+    font-weight: bold;
+}
+.amount-received {
+    color: #28a745;
+    font-weight: bold;
+}
+.no-data {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 40px;
+}
+.payment-type {
+    font-size: 0.9em;
+    color: #666;
+}

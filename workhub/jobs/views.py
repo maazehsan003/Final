@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import Job, Application, WorkSubmission, WorkFile
 from payments.models import Wallet, Payment, Transaction
+from reviews.models import Review
 from django.db import transaction
 from django.utils import timezone
 from django.core.files.storage import default_storage
@@ -326,12 +327,15 @@ def view_work_submission(request, job_id):
     try:
         work_submission = WorkSubmission.objects.get(job=job)
         work_files = work_submission.work_files.all()
-        
+        has_review = False
+
         context = {
             'job': job,
             'work_submission': work_submission,
             'work_files': work_files,
             'is_client': request.user == job.client,
+            'is_freelancer': request.user == job.freelancer,
+            'has_review': has_review,  
         }
         
         return render(request, 'jobs/submit_detail.html', context)
