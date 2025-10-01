@@ -9,6 +9,7 @@ urlpatterns = [
     path("", include("jobs.urls")),
     path("", include("payments.urls")),
     path("", include("reviews.urls")),
+    path("", include("messaging.urls")),
 ]
 
 
