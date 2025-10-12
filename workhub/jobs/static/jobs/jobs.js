@@ -1,5 +1,8 @@
 // Job List + Applications Management JavaScript 
 
+// Declare openSubmitWorkModal globally so it's accessible from HTML
+let openSubmitWorkModal;
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Job & Applications JavaScript loaded');
 
@@ -256,7 +259,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = document.getElementById('submitWorkBtn');
         const modalJobTitle = document.getElementById('modalJobTitle');
         
-        if (!modal || !form) return; // Exit if modal elements don't exist
+        if (!modal || !form) {
+            console.log('Submit work modal elements not found');
+            return;
+        }
         
         let selectedFiles = [];
         let currentJobId = null;
@@ -265,6 +271,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof bootstrap !== 'undefined') {
             modalInstance = new bootstrap.Modal(modal);
         }
+        
+        // Assign to global variable so it's accessible from HTML onclick
+        openSubmitWorkModal = function(jobId, jobTitle) {
+            console.log('Opening modal for job:', jobId, jobTitle);
+            currentJobId = jobId;
+            if (modalJobTitle) modalJobTitle.textContent = jobTitle;
+            if (modalInstance) {
+                modalInstance.show();
+            } else {
+                console.error('Modal instance not initialized');
+            }
+        };
+        
+        // Also expose it on window object for extra safety
+        window.openSubmitWorkModal = openSubmitWorkModal;
         
         // File input change handler
         if (fileInput) {
@@ -415,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 formData.append('file_count', selectedFiles.length);
                 
-                // Submit to server - Use relative URL
+                // Submit to server
                 fetch('/submit-work/', {
                     method: 'POST',
                     body: formData,
@@ -433,44 +454,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.success) {
                         if (modalInstance) modalInstance.hide();
                         
-                        // Use toast notification instead of alert
+                        // Show success toast
                         if (window.toast) {
-                            window.toast.success(
-                                'Work Submitted Successfully!', 
-                                'Your work has been submitted and the client will be notified. The job status has been updated to "Under Review".',
-                                4000
-                            );
+                            const message = `Payment of $${data.payment_released} has been released to your account. Uploaded ${data.files ? data.files.length : 0} file(s).`;
+                            window.toast.success('Work Submitted Successfully!', message, 5000);
                         }
                         
-                        // Reload page after a short delay to show the toast
+                        // Reload page
                         setTimeout(() => {
                             window.location.reload();
-                        }, 1500);
+                        }, 2000);
                     } else {
-                        // Use toast for errors too
+                        // Show error toast
                         if (window.toast) {
-                            window.toast.error(
-                                'Submission Failed', 
-                                data.error || 'Failed to submit work. Please try again.',
-                                6000
-                            );
-                        } else {
-                            alert('Error: ' + (data.error || 'Failed to submit work'));
+                            window.toast.error('Submission Failed', data.error || 'Failed to submit work', 5000);
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    
-                    // Use toast for network errors too
+                    // Show error toast
                     if (window.toast) {
-                        window.toast.error(
-                            'Network Error', 
-                            'An error occurred while submitting your work. Please check your connection and try again.',
-                            6000
-                        );
-                    } else {
-                        alert('An error occurred while submitting your work. Please try again.');
+                        window.toast.error('Network Error', 'An error occurred while submitting your work. Please try again.', 5000);
                     }
                 })
                 .finally(() => {
@@ -503,13 +508,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (agreeTerms) agreeTerms.checked = false;
             });
         }
-        
-        // Expose function to open modal
-        window.openSubmitWorkModal = function(jobId, jobTitle) {
-            currentJobId = jobId;
-            if (modalJobTitle) modalJobTitle.textContent = jobTitle;
-            if (modalInstance) modalInstance.show();
-        };
     }
 
     /** ---------------- MODAL FUNCTIONS ---------------- **/
@@ -759,6 +757,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function initAlerts() {
+        // Auto-dismiss alerts after 5 seconds
+        const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        });
+    }
     
     function initKeyboardShortcuts() {
         document.addEventListener('keydown', e => {
@@ -851,5 +859,83 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 500);
             }
         });
+    }
+});
+
+/**
+ * Update navbar notification dot
+ */
+function updateNavbarBadge(count) {
+    const navLinks = document.querySelectorAll('.navbar a[href*="inbox"]');
+    
+    navLinks.forEach(link => {
+        let dot = link.querySelector('.unread-dot');
+        
+        if (count > 0) {
+            if (!dot) {
+                dot = document.createElement('span');
+                dot.className = 'unread-dot';
+                link.appendChild(dot);
+            }
+        } else {
+            if (dot) {
+                dot.remove();
+            }
+        }
+    });
+}
+
+/**
+ * Check unread message count
+ */
+function checkUnreadMessages() {
+    const inboxLink = document.querySelector('.navbar a[href*="inbox"]');
+    if (!inboxLink) return;
+    
+    const csrftoken = getCookie('csrftoken');
+    
+    fetch('/api/unread-count/', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network error');
+        return response.json();
+    })
+    .then(data => {
+        updateNavbarBadge(data.unread_count);
+    })
+    .catch(error => {
+        // Silently fail
+    });
+}
+
+/**
+ * Helper function to get cookie
+ */
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Check for unread messages on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const inboxLink = document.querySelector('.navbar a[href*="inbox"]');
+    if (inboxLink) {
+        checkUnreadMessages();
+        setInterval(checkUnreadMessages, 5000);
     }
 });

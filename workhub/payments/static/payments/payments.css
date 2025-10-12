@@ -217,3 +217,30 @@ body {
     font-size: 0.9em;
     color: #666;
 }
+/* Unread notification dot */
+.navbar .nav-link {
+  position: relative;
+}
+
+.navbar .unread-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #dc3545;
+  border-radius: 50%;
+  border: 2px solid #f8f9fa;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}

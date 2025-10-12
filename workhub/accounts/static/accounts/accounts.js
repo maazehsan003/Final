@@ -28,13 +28,70 @@ function showNotification(type, title, message) {
     if (window.toast) {
         window.toast.show(type, title, message);
     } else {
-        // Fallback to alert if toast system isn't available
         alert(`${title}: ${message}`);
     }
 }
 
+/**
+ * Update navbar notification dot
+ */
+function updateNavbarBadge(count) {
+    const navLinks = document.querySelectorAll('.navbar a[href*="inbox"]');
+    
+    navLinks.forEach(link => {
+        let dot = link.querySelector('.unread-dot');
+        
+        if (count > 0) {
+            if (!dot) {
+                dot = document.createElement('span');
+                dot.className = 'unread-dot';
+                link.appendChild(dot);
+            }
+        } else {
+            if (dot) {
+                dot.remove();
+            }
+        }
+    });
+}
+
+/**
+ * Check unread message count
+ */
+function checkUnreadMessages() {
+    const inboxLink = document.querySelector('.navbar a[href*="inbox"]');
+    if (!inboxLink) return;
+    
+    fetch('/api/unread-count/', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        updateNavbarBadge(data.unread_count);
+    })
+    .catch(error => {
+        // Silently fail
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    csrftoken = getCookie('csrftoken');    
+    csrftoken = getCookie('csrftoken');
+    
+    // Only start checking for authenticated users
+    const inboxLink = document.querySelector('.navbar a[href*="inbox"]');
+    if (inboxLink) {
+        checkUnreadMessages();
+        setInterval(checkUnreadMessages, 5000);
+    }
     
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
@@ -130,7 +187,6 @@ function selectRole(role, el) {
     document.getElementById('selectedRole').value = role;
     document.getElementById('continueBtn').disabled = false;
     
-    // Add ripple effect
     const ripple = document.createElement('div');
     ripple.style.cssText = `
         position: absolute;
@@ -206,7 +262,6 @@ async function submitRole() {
     }
 }
 
-// Add ripple animation CSS if not already present
 if (!document.getElementById('ripple-animation-css')) {
     const style = document.createElement('style');
     style.id = 'ripple-animation-css';
@@ -220,107 +275,103 @@ if (!document.getElementById('ripple-animation-css')) {
     `;
     document.head.appendChild(style);
 }
-// Professional Toast Notification System
-    class ProfessionalToast {
-        constructor(container) {
-            this.container = container || document.getElementById('toastContainer');
-        }
+
+class ProfessionalToast {
+    constructor(container) {
+        this.container = container || document.getElementById('toastContainer');
+    }
+    
+    show(type, title, message, duration = 5000) {
+        const toastId = 'toast-' + Date.now();
+        const icons = {
+            'success': 'fas fa-check-circle',
+            'info': 'fas fa-info-circle', 
+            'warning': 'fas fa-exclamation-triangle',
+            'error': 'fas fa-times-circle'
+        };
         
-        show(type, title, message, duration = 5000) {
-            const toastId = 'toast-' + Date.now();
-            const icons = {
-                'success': 'fas fa-check-circle',
-                'info': 'fas fa-info-circle', 
-                'warning': 'fas fa-exclamation-triangle',
-                'error': 'fas fa-times-circle'
-            };
-            
-            const toastHtml = `
-                <div class="toast professional-toast ${type}" role="alert" id="${toastId}">
-                    <div class="toast-body">
-                        <div class="toast-content">
-                            <i class="${icons[type]} toast-icon"></i>
-                            <div class="flex-grow-1">
-                                <div class="toast-title">${title}</div>
-                                <div class="toast-message">${message}</div>
-                            </div>
-                            <button type="button" class="btn-close toast-close" data-bs-dismiss="toast"></button>
+        const toastHtml = `
+            <div class="toast professional-toast ${type}" role="alert" id="${toastId}">
+                <div class="toast-body">
+                    <div class="toast-content">
+                        <i class="${icons[type]} toast-icon"></i>
+                        <div class="flex-grow-1">
+                            <div class="toast-title">${title}</div>
+                            <div class="toast-message">${message}</div>
                         </div>
+                        <button type="button" class="btn-close toast-close" data-bs-dismiss="toast"></button>
                     </div>
                 </div>
-            `;
-            
-            this.container.insertAdjacentHTML('beforeend', toastHtml);
-            
-            const toastElement = document.getElementById(toastId);
-            const bsToast = new bootstrap.Toast(toastElement, {
-                delay: duration,
-                autohide: true
-            });
-            
-            bsToast.show();
-            
-            // Remove from DOM after hiding
-            toastElement.addEventListener('hidden.bs.toast', () => {
-                toastElement.remove();
-            });
-            
-            return bsToast;
-        }
+            </div>
+        `;
         
-        success(title, message, duration) {
-            return this.show('success', title, message, duration);
-        }
+        this.container.insertAdjacentHTML('beforeend', toastHtml);
         
-        error(title, message, duration) {
-            return this.show('error', title, message, duration);
-        }
-        
-        warning(title, message, duration) {
-            return this.show('warning', title, message, duration);
-        }
-        
-        info(title, message, duration) {
-            return this.show('info', title, message, duration);
-        }
-    }
-
-    // Initialize toast system
-    const toast = new ProfessionalToast();
-
-    // Convert Django messages to professional toasts
-    document.addEventListener('DOMContentLoaded', function() {
-        const messageElements = document.querySelectorAll('#django-messages > div');
-        
-        messageElements.forEach(element => {
-            const type = element.getAttribute('data-message-type');
-            const message = element.getAttribute('data-message-text');
-            
-            let title = 'Notification';
-            let toastType = 'info';
-            
-            switch(type) {
-                case 'success':
-                    title = 'Success';
-                    toastType = 'success';
-                    break;
-                case 'error':
-                    title = 'Error';
-                    toastType = 'error';
-                    break;
-                case 'warning':
-                    title = 'Warning';
-                    toastType = 'warning';
-                    break;
-                case 'info':
-                    title = 'Information';
-                    toastType = 'info';
-                    break;
-            }
-            
-            toast.show(toastType, title, message);
+        const toastElement = document.getElementById(toastId);
+        const bsToast = new bootstrap.Toast(toastElement, {
+            delay: duration,
+            autohide: true
         });
-    });
+        
+        bsToast.show();
+        
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
+        });
+        
+        return bsToast;
+    }
+    
+    success(title, message, duration) {
+        return this.show('success', title, message, duration);
+    }
+    
+    error(title, message, duration) {
+        return this.show('error', title, message, duration);
+    }
+    
+    warning(title, message, duration) {
+        return this.show('warning', title, message, duration);
+    }
+    
+    info(title, message, duration) {
+        return this.show('info', title, message, duration);
+    }
+}
 
-    // Make toast available globally
-    window.toast = toast;
+const toast = new ProfessionalToast();
+
+document.addEventListener('DOMContentLoaded', function() {
+    const messageElements = document.querySelectorAll('#django-messages > div');
+    
+    messageElements.forEach(element => {
+        const type = element.getAttribute('data-message-type');
+        const message = element.getAttribute('data-message-text');
+        
+        let title = 'Notification';
+        let toastType = 'info';
+        
+        switch(type) {
+            case 'success':
+                title = 'Success';
+                toastType = 'success';
+                break;
+            case 'error':
+                title = 'Error';
+                toastType = 'error';
+                break;
+            case 'warning':
+                title = 'Warning';
+                toastType = 'warning';
+                break;
+            case 'info':
+                title = 'Information';
+                toastType = 'info';
+                break;
+        }
+        
+        toast.show(toastType, title, message);
+    });
+});
+
+window.toast = toast;

@@ -179,6 +179,7 @@ def update_application_status(request):
             return JsonResponse({'success': True, 'message': 'Application declined'})
     
     return JsonResponse({'success': False, 'error': 'Invalid status'})
+
 @login_required
 @require_POST
 def submit_work(request):
@@ -298,18 +299,23 @@ def my_jobs(request):
     # Completed jobs for freelancer
     completed_jobs = Job.objects.filter(freelancer=request.user, status='completed')
     
-    # Jobs with submitted work (for client review) - now includes both under_review and completed
-    # since work is automatically approved and completed when submitted
+    # Jobs with submitted work (for client review)
     jobs_under_review = Job.objects.filter(
         client=request.user, 
         status__in=['under_review', 'completed']
     ).filter(work_submission__isnull=False)
+    
+    # Calculate counts for client
+    pending_jobs = posted_jobs.filter(status__in=['open', 'in_progress', 'under_review'])
+    completed_client_jobs = posted_jobs.filter(status='completed')
     
     context = {
         'posted_jobs': posted_jobs,
         'assigned_jobs': assigned_jobs,
         'completed_jobs': completed_jobs,
         'jobs_under_review': jobs_under_review,
+        'pending_jobs': pending_jobs,
+        'completed_client_jobs': completed_client_jobs,
     }
     
     return render(request, 'jobs/my_jobs.html', context)
