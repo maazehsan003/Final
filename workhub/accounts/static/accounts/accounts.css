@@ -1,9 +1,10 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f5f5f5;
 }
+
 .role-card {
   cursor: pointer;
   transition: all 0.3s ease;
@@ -45,7 +46,7 @@ body {
   transform: scale(1.05);
 }
 
-/* Stats cards - FIXED */
+/* Stats cards */
 .card.bg-primary {
   background: linear-gradient(135deg, #007bff, #0056b3) !important;
   transition: all 0.3s ease;
@@ -139,21 +140,6 @@ body {
   border-radius: 0.5rem;
 }
 
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .card:hover {
-    transform: none;
-  }
-  
-  .btn:hover {
-    transform: none;
-  }
-  
-  .img-thumbnail:hover {
-    transform: none;
-  }
-}
-
 /* Animation for page load */
 @keyframes fadeInUp {
   from {
@@ -216,6 +202,8 @@ body {
 .empty-state:hover {
   opacity: 1;
 }
+
+/* Toast container */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -294,6 +282,7 @@ body {
 .professional-toast.show {
     animation: slideInRight 0.3s ease-out;
 }
+
 .navbar .nav-link {
   position:relative
 }
@@ -312,4 +301,231 @@ body {
 
 @keyframes pulse-dot {
   0%,100%{transform:scale(1);opacity:1}
-  50%{transform:scale(1.2);opacity:.8}}
+  50%{transform:scale(1.2);opacity:.8}
+}
+
+/* Mobile - Extra Small Devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+    body {
+        padding: 10px;
+    }
+
+    /* Navbar adjustments */
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    /* Toast notifications */
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .professional-toast {
+        min-width: auto;
+        width: 100%;
+    }
+
+    /* Card spacing */
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    /* Dashboard welcome */
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Wallet card */
+    .card-body .row.align-items-center {
+        text-align: center !important;
+    }
+
+    .card-body .row.align-items-center .col-md-8,
+    .card-body .row.align-items-center .col-md-4 {
+        text-align: center !important;
+    }
+
+    .card-body .row.align-items-center .col-md-4 {
+        margin-top: 1rem;
+    }
+
+    /* Stats cards - stack vertically */
+    .row.mt-4 .col-md-4 {
+        margin-bottom: 1rem;
+    }
+
+    /* Profile images */
+    .img-thumbnail,
+    .rounded-circle {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    /* Quick actions buttons */
+    .btn-lg {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+
+    /* Role selection modal */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .role-card {
+        margin-bottom: 1rem;
+    }
+
+    /* Registration and login forms */
+    .card.shadow {
+        margin: 1rem 0;
+    }
+
+    /* Form inputs */
+    .form-control,
+    .form-select {
+        font-size: 0.9rem;
+    }
+
+    /* Disable hover effects on mobile */
+    .card:hover {
+        transform: none;
+    }
+
+    .btn:hover {
+        transform: none;
+    }
+
+    .img-thumbnail:hover {
+        transform: none;
+    }
+
+    .card.bg-primary:hover,
+    .card.bg-success:hover,
+    .card.bg-info:hover,
+    .card.bg-warning:hover {
+        transform: none;
+    }
+}
+
+/* Mobile - Small Devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    /* Toast notifications */
+    .toast-container {
+        right: 15px;
+        left: auto;
+    }
+
+    .professional-toast {
+        min-width: 300px;
+    }
+
+    /* Profile images */
+    .img-thumbnail,
+    .rounded-circle {
+        width: 120px !important;
+        height: 120px !important;
+    }
+
+    /* Stats cards - 2 columns */
+    .row.mt-4 .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Tablet - Medium Devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Wallet card adjustments */
+    .card-body .row.align-items-center .col-md-8 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .card-body .row.align-items-center .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    /* Profile layout adjustments */
+    .card-body .row .col-md-8,
+    .card-body .row .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .card-body .row .col-md-4 {
+        margin-top: 1rem;
+    }
+}
+
+/* Landscape phone specific fixes */
+@media (max-width: 767.98px) and (orientation: landscape) {
+    /* Reduce vertical spacing */
+    .card {
+        margin-bottom: 0.75rem;
+    }
+
+    .row.mt-4 {
+        margin-top: 1rem !important;
+    }
+
+    /* Compact profile images */
+    .img-thumbnail,
+    .rounded-circle {
+        width: 80px !important;
+        height: 80px !important;
+    }
+}
+
+/* Fix for very small screens (below 360px) */
+@media (max-width: 359.98px) {
+    body {
+        padding: 5px;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .badge {
+        font-size: 0.7em;
+        padding: 0.4em 0.6em;
+    }
+}
+
+/* Print styles */
+@media print {
+    .btn,
+    .navbar,
+    .toast-container,
+    .alert {
+        display: none !important;
+    }
+
+    body {
+        padding: 0;
+        background: white;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        break-inside: avoid;
+    }
+}

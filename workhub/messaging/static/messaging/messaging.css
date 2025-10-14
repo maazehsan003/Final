@@ -1,6 +1,6 @@
 /* ===== Base Styles ===== */
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f5f5f5;
@@ -710,60 +710,7 @@ body {
     }
 }
 
-/* ===== Responsive Design ===== */
-@media (max-width: 768px) {
-    .messaging-header {
-        padding: 20px;
-    }
-
-    .conversation-link {
-        padding: 15px 20px;
-    }
-
-    .conversation-avatar i {
-        font-size: 40px;
-    }
-
-    .messages-wrapper {
-        height: 500px;
-    }
-
-    .messages-container {
-        padding: 20px;
-    }
-
-    .message-bubble {
-        max-width: 80%;
-    }
-
-    .message-input-wrapper {
-        padding: 15px 20px;
-    }
-
-    .new-message-wrapper {
-        padding: 30px 20px;
-    }
-
-    .delete-confirmation-card {
-        padding: 30px 20px;
-    }
-
-    .delete-icon-wrapper i {
-        font-size: 60px;
-    }
-
-    .delete-title {
-        font-size: 1.5rem;
-    }
-
-    .delete-actions {
-        flex-direction: column;
-    }
-
-    .delete-actions .btn {
-        width: 100%;
-    }
-}
+/* Toast Notifications */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -841,4 +788,354 @@ body {
 
 .professional-toast.show {
     animation: slideInRight 0.3s ease-out;
+}
+
+/* Mobile - Extra Small Devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    /* Header adjustments */
+    .messaging-header {
+        padding: 15px;
+    }
+
+    .messaging-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .messaging-header h4 {
+        font-size: 1.1rem;
+    }
+
+    .messaging-header .d-flex {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .messaging-header .btn {
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    /* Conversation list */
+    .conversation-link {
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .conversation-avatar i {
+        font-size: 36px;
+    }
+
+    .conversation-name {
+        font-size: 1rem;
+    }
+
+    .conversation-time {
+        font-size: 0.75rem;
+    }
+
+    .conversation-preview {
+        font-size: 0.85rem;
+    }
+
+    /* Messages */
+    .messages-wrapper {
+        height: calc(100vh - 200px);
+        min-height: 400px;
+    }
+
+    .messages-container {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .message-bubble {
+        max-width: 85%;
+        padding: 10px 14px;
+    }
+
+    .message-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+    }
+
+    .message-sender-name {
+        font-size: 0.85rem;
+    }
+
+    .message-timestamp {
+        font-size: 0.7rem;
+    }
+
+    .message-body {
+        font-size: 0.9rem;
+    }
+
+    /* Message input */
+    .message-input-wrapper {
+        padding: 15px;
+    }
+
+    .message-form .input-group {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .attachment-btn {
+        padding: 8px 12px;
+    }
+
+    .message-textarea {
+        min-height: 44px;
+        font-size: 16px;
+        width: 100%;
+    }
+
+    .send-btn {
+        padding: 10px 16px;
+        width: 100%;
+    }
+
+    /* Toast notifications */
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .professional-toast {
+        min-width: auto;
+        width: 100%;
+    }
+
+    /* Delete confirmation */
+    .delete-confirmation-card {
+        padding: 20px;
+    }
+
+    .delete-icon-wrapper i {
+        font-size: 60px;
+    }
+
+    .delete-title {
+        font-size: 1.3rem;
+    }
+
+    .delete-actions {
+        flex-direction: column;
+    }
+
+    .delete-actions .btn {
+        min-width: auto;
+        width: 100%;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+        padding: 10px 15px;
+    }
+
+    .typing-text {
+        font-size: 0.85rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+        padding: 40px 20px;
+    }
+
+    .conversations-wrapper {
+        min-height: 300px;
+    }
+
+    /* Unread badge */
+    .unread-indicator .badge {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+}
+
+/* Mobile - Small Devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    /* Toast notifications */
+    .toast-container {
+        right: 15px;
+    }
+
+    .professional-toast {
+        min-width: 300px;
+    }
+
+    /* Messages */
+    .messages-wrapper {
+        height: 500px;
+    }
+
+    .message-bubble {
+        max-width: 75%;
+    }
+
+    /* Conversation */
+    .conversation-link {
+        padding: 18px 20px;
+    }
+
+    .conversation-avatar i {
+        font-size: 42px;
+    }
+}
+
+/* Tablet - Medium Devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .messaging-header {
+        padding: 20px;
+    }
+
+    .messages-wrapper {
+        height: 550px;
+    }
+
+    .messages-container {
+        padding: 25px;
+    }
+
+    .message-bubble {
+        max-width: 70%;
+    }
+
+    .message-input-wrapper {
+        padding: 18px 25px;
+    }
+
+    .delete-confirmation-card {
+        padding: 35px;
+    }
+}
+
+@media (max-width: 767.98px) and (orientation: landscape) {
+    .messages-wrapper {
+        height: 350px;
+        min-height: 300px;
+    }
+
+    .messaging-header {
+        padding: 12px 15px;
+    }
+
+    .messaging-header h2,
+    .messaging-header h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+
+    .message-input-wrapper {
+        padding: 12px 15px;
+    }
+
+    .messages-container {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 359.98px) {
+    body {
+        padding: 5px;
+    }
+
+    .container {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .messaging-header {
+        padding: 12px;
+    }
+
+    .messaging-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .conversation-link {
+        padding: 12px;
+    }
+
+    .conversation-avatar i {
+        font-size: 32px;
+    }
+
+    .messages-container {
+        padding: 12px;
+    }
+
+    .message-bubble {
+        padding: 8px 12px;
+        max-width: 90%;
+    }
+
+    .message-input-wrapper {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .btn,
+    .conversation-link,
+    .attachment-btn,
+    .send-btn {
+        min-height: 44px;
+    }
+
+    .message-textarea,
+    .form-control,
+    .form-select {
+        min-height: 44px;
+        font-size: 16px; 
+    
+    }
+
+    .conversation-item:hover,
+    .message-bubble:hover,
+    .btn:hover,
+    .send-btn:hover {
+        transform: none;
+        box-shadow: initial;
+    }
+}
+@media print {
+    .btn,
+    .navbar,
+    .toast-container,
+    .message-input-wrapper,
+    .messaging-header .btn,
+    .attachment-btn,
+    .send-btn {
+        display: none !important;
+    }
+
+    body {
+        padding: 0;
+        background: white;
+    }
+
+    .messaging-container {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+
+    .messages-wrapper {
+        height: auto !important;
+    }
+
+    .message-bubble {
+        break-inside: avoid;
+    }
 }

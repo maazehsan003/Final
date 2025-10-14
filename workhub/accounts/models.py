@@ -15,14 +15,14 @@ class Profile(models.Model):
 # for freelancers
 class FreelancerProfile(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100, default='Unknown')
-    last_name = models.CharField(max_length=100, default='User')
+    first_name = models.CharField(max_length=100,)
+    last_name = models.CharField(max_length=100,)
     title = models.CharField(max_length=100)
     bio = models.TextField()
     skills = models.CharField(max_length=250)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    hourly_rate = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
-    profile_picture = models.ImageField(upload_to="profile_pics/", blank=True, null=True)
+    phone_number = models.CharField(max_length=20)
+    hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
+    profile_picture = models.ImageField(upload_to="profile_pics/")
 
     def __str__(self):
         return f"Freelancer: {self.first_name} {self.last_name} ({self.profile.user.username})"
@@ -32,8 +32,8 @@ class ClientProfile(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     company_name = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    profile_picture = models.ImageField(upload_to="profile_pics/", blank=True, null=True)
+    phone_number = models.CharField(max_length=20)
+    profile_picture = models.ImageField(upload_to="profile_pics/")
 
     def __str__(self):
         return f"Client: {self.first_name} {self.last_name} - {self.company_name} ({self.profile.user.username})"

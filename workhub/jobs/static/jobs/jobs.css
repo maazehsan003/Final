@@ -1,10 +1,11 @@
 /* Job List Styles */
 body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #f5f5f5;
-    }
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
 .job-card {
     transition: all 0.3s ease;
     border-left: 4px solid transparent;
@@ -71,27 +72,6 @@ body {
 
 .navbar .dropdown-toggle::after {
     margin-left: 0.255em;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    #job-detail-panel {
-        position: relative !important;
-        top: 0 !important;
-        margin-top: 20px;
-    }
-    
-    .job-card {
-        margin-bottom: 15px;
-    }
-    
-    .navbar .dropdown-menu {
-        position: absolute !important;
-        transform: none !important;
-        left: auto !important;
-        right: 10px !important;
-        min-width: 180px;
-    }
 }
 
 /* Animation for job details */
@@ -326,8 +306,6 @@ body {
     animation: slideInRight 0.3s ease-out;
 }
 
-/* ==== NEW SEARCH-SPECIFIC STYLES ==== */
-
 /* Search highlight styling */
 .search-highlight {
     background-color: #fff3cd;
@@ -352,6 +330,19 @@ body {
 #clear-search {
     border-left: none;
     transition: all 0.2s ease;
+}
+
+
+.status-completed {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: 1px solid #20c997;
+}
+
+.submission-info .alert-info {
+    background: linear-gradient(135deg, #e8f4fd, #d1ecf1);
+    border-left: 4px solid #17a2b8;
+    border-radius: 10px;
 }
 
 #clear-search:hover {
@@ -389,27 +380,6 @@ body {
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-/* Responsive search adjustments */
-@media (max-width: 768px) {
-    .row > .col-md-8, 
-    .row > .col-md-4 {
-        margin-bottom: 1rem;
-    }
-    
-    .input-group {
-        flex-wrap: nowrap;
-    }
-    
-    #job-search {
-        min-width: 0;
-        flex: 1;
-    }
-    
-    #category-filter {
-        margin-top: 10px;
     }
 }
 
@@ -563,8 +533,6 @@ kbd {
     100% { transform: rotate(360deg); }
 }
 
-/* ====== APPLICATIONS PAGE STYLES ====== */
-
 /* Applications header */
 .header {
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
@@ -695,6 +663,12 @@ kbd {
     border: 1px solid #f5c6cb;
 }
 
+.status-completed {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: 1px solid #20c997;
+}
+
 /* Wallet info styling */
 .wallet-info {
     background: linear-gradient(135deg, #e3f2fd, #bbdefb);
@@ -731,7 +705,7 @@ kbd {
     flex-wrap: wrap;
 }
 
-/* Enhanced button styling for applications */
+/* Enhanced button styling */
 .btn {
     padding: 0.75rem 1.5rem;
     border: none;
@@ -830,162 +804,6 @@ kbd {
     padding: 1rem;
 }
 
-/* Enhanced alert styling */
-.alert {
-    border: none;
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.alert-success {
-    background: linear-gradient(135deg, #d4edda, #c3e6cb);
-    color: #155724;
-    border-left: 4px solid #28a745;
-}
-
-.alert-danger {
-    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-    color: #721c24;
-    border-left: 4px solid #dc3545;
-}
-
-.alert-warning {
-    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-    color: #856404;
-    border-left: 4px solid #ffc107;
-}
-
-.alert-info {
-    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
-    color: #0c5460;
-    border-left: 4px solid #17a2b8;
-}
-
-/* Loading state for applications */
-.loading {
-    opacity: 0.6;
-    pointer-events: none;
-    position: relative;
-}
-
-.loading::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-}
-
-/* Responsive design for applications */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    .header {
-        padding: 1.5rem;
-        text-align: center;
-    }
-    
-    .section {
-        padding: 1.5rem;
-    }
-    
-    .application-card {
-        padding: 1rem;
-    }
-    
-    .application-actions {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-        min-width: auto;
-    }
-    
-    .section-title {
-        font-size: 1.2rem;
-    }
-    
-    .job-title {
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header h1 {
-        font-size: 1.5rem;
-    }
-    
-    .header p {
-        font-size: 1rem;
-    }
-    
-    .section {
-        padding: 1rem;
-    }
-    
-    .application-card {
-        padding: 0.75rem;
-    }
-    
-    .wallet-info {
-        padding: 0.75rem;
-        font-size: 0.9rem;
-    }
-}
-
-/* Additional slide-in animation */
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.slide-in-up {
-    animation: slideInUp 0.3s ease-out;
-}
-
-/* Accessibility improvements */
-.btn:focus,
-.wallet-topup-link:focus {
-    outline: 2px solid #007bff;
-    outline-offset: 2px;
-}
-
-/* Print styles for applications */
-@media print {
-    .btn,
-    .navigation-footer,
-    .alert {
-        display: none;
-    }
-    
-    .application-card {
-        border: 1px solid #000;
-        box-shadow: none;
-        break-inside: avoid;
-    }
-    
-    .section {
-        box-shadow: none;
-        border: 1px solid #000;
-    }
-}
 /* Modal Enhancements */
 .modal-content {
     border-radius: 15px;
@@ -1013,102 +831,7 @@ kbd {
     padding: 1rem 2rem;
 }
 
-/* Success Modal */
-.modal-success .modal-header {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-/* Error Modal */
-.modal-error .modal-header {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-}
-
-/* Accept Modal */
-.modal-accept .modal-header {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-}
-
-/* Decline Modal */
-.modal-decline .modal-header {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-}
-
-/* Details styling */
-.detail-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #f8f9fa;
-}
-
-.detail-item:last-child {
-    border-bottom: none;
-}
-
-.detail-label {
-    font-weight: 600;
-    color: #495057;
-}
-
-.detail-value {
-    color: #28a745;
-    font-weight: 500;
-}
-
-/* Animation */
-.modal.fade .modal-dialog {
-    transform: translateY(-50px);
-    transition: transform 0.3s ease-out;
-}
-
-.modal.show .modal-dialog {
-    transform: translateY(0);
-}
-
-/* Loading button state */
-.btn-loading {
-    position: relative;
-    pointer-events: none;
-}
-
-.btn-loading::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -8px 0 0 -8px;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
-/* Application card hover effect */
-.application-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.application-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-/* Enhanced Modal Styling */
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-}
-
+/* File upload */
 .file-upload-area {
     border: 2px dashed #dee2e6;
     border-radius: 8px;
@@ -1120,11 +843,6 @@ kbd {
 .file-upload-area:hover {
     border-color: #007bff;
     background: #e3f2fd;
-}
-
-.file-upload-area input[type="file"] {
-    border: none;
-    background: transparent;
 }
 
 .file-list {
@@ -1152,7 +870,6 @@ kbd {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
 
 .file-item:last-child {
     border-bottom: none;
@@ -1183,57 +900,22 @@ kbd {
     margin-right: 0.5rem;
 }
 
-.file-size {
-    color: #6c757d;
-    font-size: 0.85rem;
+.download-btn {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.2s ease;
 }
 
-.file-remove {
-    color: #dc3545;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 3px;
-    transition: background-color 0.2s;
+.download-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #004494);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
-
-.file-remove:hover {
-    background-color: #f8d7da;
-}
-
-.btn-loading {
-    position: relative;
-    pointer-events: none;
-}
-
-.btn-loading::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -8px 0 0 -8px;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.modal-lg {
-    max-width: 800px;
-}
-
-/* File type icons */
-.file-icon.pdf { color: #dc3545; }
-.file-icon.doc, .file-icon.docx { color: #007bff; }
-.file-icon.zip, .file-icon.rar { color: #6c757d; }
-.file-icon.image { color: #28a745; }
-.file-icon.video { color: #ffc107; }
-.file-icon.default { color: #6c757d; }
 
 .work-submission-header {
     background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
@@ -1253,91 +935,6 @@ kbd {
     border: 1px solid #e9ecef;
 }
 
-.download-btn {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-.download-btn:hover {
-    background: linear-gradient(135deg, #0056b3, #004494);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-}
-
-.status-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.status-pending {
-    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-    color: #856404;
-    border: 1px solid #ffeaa7;
-}
-
-.status-approved {
-    background: linear-gradient(135deg, #d4edda, #c3e6cb);
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.submission-actions {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-top: 2rem;
-}
-
-.btn-action {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: none;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 150px;
-    justify-content: center;
-}
-
-.btn-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.btn-approve {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-}
-
-.btn-approve:hover {
-    background: linear-gradient(135deg, #218838, #1ca085);
-    color: white;
-}
-
-.btn-revision {
-    background: linear-gradient(135deg, #ffc107, #ffb300);
-    color: white;
-}
-
-.btn-revision:hover {
-    background: linear-gradient(135deg, #e0a800, #ff8f00);
-    color: white;
-}
 /* Unread notification dot */
 .navbar .nav-link {
   position: relative;
@@ -1364,4 +961,489 @@ kbd {
     transform: scale(1.2);
     opacity: 0.8;
   }
+}
+
+/* Mobile - Extra Small Devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+    body {
+        padding: 10px;
+    }
+
+    /* Container adjustments */
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    /* Header adjustments */
+    .header {
+        padding: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .header p {
+        font-size: 0.9rem;
+    }
+
+    /* Section adjustments */
+    .section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Application cards */
+    .application-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .job-title {
+        font-size: 1.1rem;
+    }
+
+    .application-details p {
+        font-size: 0.9rem;
+    }
+
+    .cover-letter {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    /* Application actions - stack vertically */
+    .application-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn {
+        width: 100%;
+        min-width: auto;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Wallet info */
+    .wallet-info {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* Status badges */
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    /* Toast notifications */
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .professional-toast {
+        min-width: auto;
+        width: 100%;
+    }
+
+    /* Job cards */
+    .job-card {
+        margin-bottom: 0.75rem;
+    }
+
+    .job-card .card-body {
+        padding: 1rem;
+    }
+
+    .job-card .card-title {
+        font-size: 1rem;
+    }
+
+    .job-card .card-text {
+        font-size: 0.85rem;
+    }
+
+    /* Search section */
+    .card.mb-4 .row {
+        gap: 0.5rem;
+    }
+
+    .card.mb-4 .col-md-8,
+    .card.mb-4 .col-md-4 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    #job-search {
+        font-size: 0.9rem;
+    }
+
+    #category-filter {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    #clear-search {
+        padding: 0.375rem 0.5rem;
+    }
+
+    /* Detail panel */
+    #job-detail-panel {
+        position: relative !important;
+        top: 0 !important;
+        margin-top: 1rem;
+    }
+
+    /* Modals */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-footer {
+        padding: 0.75rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+
+    /* Work submission modal */
+    .file-upload-area {
+        padding: 0.75rem;
+    }
+
+    .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .file-icon {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+        min-width: 40px;
+    }
+
+    .file-info {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .file-name {
+        word-break: break-word;
+        width: 100%;
+    }
+
+    /* Submission card */
+    .submission-card {
+        padding: 1rem;
+    }
+
+    .work-submission-header {
+        padding: 1rem;
+    }
+
+    .work-submission-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .work-submission-header p {
+        font-size: 0.85rem;
+    }
+
+    /* Tab navigation */
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs .nav-link {
+        white-space: nowrap;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .nav-tabs .badge {
+        font-size: 0.7em;
+    }
+
+    .tab-content {
+        padding: 1rem;
+    }
+
+    /* No results message */
+    #no-results-message {
+        padding: 1rem;
+    }
+
+    #no-results-message i {
+        font-size: 2.5rem;
+    }
+
+    #no-results-message h4 {
+        font-size: 1.2rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+    }
+
+    /* Disable hover effects on mobile */
+    .job-card:hover,
+    .application-card:hover,
+    .card:hover,
+    .btn:hover,
+    .file-item:hover {
+        transform: none;
+        box-shadow: initial;
+    }
+
+    /* Form adjustments */
+    textarea.form-control {
+        font-size: 0.9rem;
+    }
+
+    /* Navbar adjustments */
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .navbar .dropdown-menu {
+        min-width: 180px;
+        right: 10px !important;
+    }
+}
+
+/* Mobile - Small Devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    body {
+        padding: 15px;
+    }
+
+    /* Toast notifications */
+    .toast-container {
+        right: 15px;
+    }
+
+    .professional-toast {
+        min-width: 300px;
+    }
+
+    /* Application actions - 2 columns */
+    .application-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    /* Job detail panel */
+    #job-detail-panel {
+        position: relative !important;
+        top: 0 !important;
+        margin-top: 1rem;
+    }
+
+    /* Search section */
+    #category-filter {
+        margin-top: 0;
+    }
+
+    /* Modal adjustments */
+    .modal-footer {
+        flex-direction: row;
+    }
+
+    .modal-footer .btn {
+        width: auto;
+    }
+}
+
+/* Tablet - Medium Devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Job detail panel - make relative on tablets */
+    #job-detail-panel {
+        position: relative !important;
+        top: 0 !important;
+        margin-top: 1.5rem;
+    }
+
+    /* Application cards - adjust spacing */
+    .application-card {
+        padding: 1.25rem;
+    }
+
+    /* Section padding */
+    .section {
+        padding: 1.5rem;
+    }
+
+    /* Work submission - adjust columns */
+    .work-submission-header .row,
+    .submission-card .row {
+        flex-direction: column;
+    }
+
+    .work-submission-header .col-md-8,
+    .work-submission-header .col-md-4,
+    .submission-card .col-md-8,
+    .submission-card .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .work-submission-header .col-md-4 {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+}
+
+/* Landscape phone specific fixes */
+@media (max-width: 767.98px) and (orientation: landscape) {
+    /* Reduce vertical spacing */
+    .section {
+        margin-bottom: 0.75rem;
+        padding: 1rem;
+    }
+
+    .application-card {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Compact modals */
+    .modal-body {
+        padding: 1rem;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+}
+
+/* Fix for very small screens (below 360px) */
+@media (max-width: 359.98px) {
+    body {
+        padding: 5px;
+    }
+
+    .container {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .header h1 {
+        font-size: 1.25rem;
+    }
+
+    .section-title {
+        font-size: 1rem;
+    }
+
+    .job-title {
+        font-size: 1rem;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .badge {
+        font-size: 0.7em;
+        padding: 0.35em 0.6em;
+    }
+
+    .application-details p {
+        font-size: 0.85rem;
+    }
+
+    .modal-dialog {
+        margin: 0.25rem;
+    }
+}
+
+/* Improve touch targets for mobile */
+@media (max-width: 767.98px) {
+    /* Minimum touch target size */
+    .btn,
+    .nav-link,
+    .dropdown-toggle,
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Larger input fields */
+    .form-control,
+    .form-select {
+        min-height: 44px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    /* Better spacing for tappable elements */
+    .application-actions .btn {
+        padding: 0.75rem 1rem;
+    }
+
+    /* Nav tabs - easier to tap */
+    .nav-tabs .nav-link {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .btn,
+    .navbar,
+    .toast-container,
+    .navigation-footer,
+    .modal,
+    .application-actions {
+        display: none !important;
+    }
+
+    body {
+        padding: 0;
+        background: white;
+    }
+
+    .card,
+    .section,
+    .application-card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .header {
+        background: white !important;
+        color: #000 !important;
+    }
 }
